@@ -25,7 +25,9 @@ export function RightRail() {
   const { activity, currentStreak, longestStreak } = useStreak();
   const me = useAuthStore((s) => s.user);
   const { data } = useQuery({ queryKey: ["suggested-members"], queryFn: () => profileService.list() });
-  const suggestions = (data?.results ?? []).filter((u) => u.id !== me?.id).slice(0, 5);
+  const suggestions = (data?.results ?? [])
+    .filter((u) => String(u.id) !== String(me?.id) && !u.isFollowing && !u.hasRequested)
+    .slice(0, 5);
 
   return (
     <aside className="hidden w-[300px] shrink-0 space-y-4 xl:block">

@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, GraduationCap, Linkedin, Github, Globe, Pencil } from "lucide-react";
+import { MapPin, GraduationCap, Linkedin, Github, Globe, Pencil, Briefcase } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -21,7 +21,7 @@ export function ProfilePage() {
   const { data, isLoading, isError } = useProfile(id);
   const { activity, currentStreak, longestStreak } = useStreak();
   const user = data ?? null;
-  const isOwn = currentUser?.id === id;
+  const isOwn = String(currentUser?.id) === String(id);
   const navigate = useNavigate();
 
   if (isLoading) return <Loader label="Loading profile..." />;
@@ -55,12 +55,35 @@ export function ProfilePage() {
               <h1 className="font-display text-2xl font-bold">{user.fullName}</h1>
               {user.badge && <VerifiedBadge type={user.badge} />}
             </div>
-            <p className="text-ink-muted">{user.course}</p>
+            {/* Subtitle adapts to who they are */}
+            {user.userType === "professional" || user.userType === "recruiter" ? (
+              <p className="text-ink-muted">
+                {user.jobTitle}
+                {user.company && (user.displayCompany ?? true) ? ` at ${user.company}` : ""}
+              </p>
+            ) : (
+              <p className="text-ink-muted">{user.course}</p>
+            )}
             <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-muted">
-              {user.university && <span className="flex items-center gap-1"><GraduationCap className="h-4 w-4" /> {user.university}{user.intakeYear ? ` · ${user.intakeYear}` : ""}</span>}
+              {(user.userType === "professional" || user.userType === "recruiter") ? (
+                <>
+                  {user.industry && <span className="flex items-center gap-1"><Briefcase className="h-4 w-4" /> {user.industry}</span>}
+                  {user.yearsExperience && <span className="flex items-center gap-1">{user.yearsExperience} experience</span>}
+                  {user.userType === "recruiter" && user.hiringFor && <span className="flex items-center gap-1">Hiring: {user.hiringFor}</span>}
+                </>
+              ) : (
+                user.university && <span className="flex items-center gap-1"><GraduationCap className="h-4 w-4" /> {user.university}{user.graduationDate ? ` · ${user.graduationDate}` : (user.intakeYear ? ` · ${user.intakeYear}` : "")}</span>
+              )}
               {user.city && <span className="flex items-center gap-1"><MapPin className="h-4 w-4" /> {user.city}</span>}
-              {user.status && <span className="rounded-full bg-sand px-2 py-0.5 text-xs font-medium capitalize text-ink-soft">{user.status}</span>}
+              {user.userType && <span className="rounded-full bg-sand px-2 py-0.5 text-xs font-medium capitalize text-ink-soft">{user.userType}</span>}
             </div>
+            {/* networking / referral availability for professionals */}
+            {(user.userType === "professional" || user.userType === "recruiter") && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {user.openToNetworking && <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">Open to networking</span>}
+                {user.openToReferrals && <span className="rounded-full bg-coral/10 px-2.5 py-0.5 text-xs font-medium text-coral">Open to referrals</span>}
+              </div>
+            )}
             <div className="mt-3 flex gap-4 text-sm">
               <span><strong>{user.followersCount}</strong> <span className="text-ink-muted">followers</span></span>
               <span><strong>{user.followingCount}</strong> <span className="text-ink-muted">following</span></span>

@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import type { Story } from "@/types";
 import { cn } from "@/utils/cn";
+import { timeAgo } from "@/utils/format";
 
 function groupByAuthor(stories: Story[]) {
   const map = new Map<string, Story[]>();
@@ -144,7 +145,10 @@ export function StoriesBar() {
               </div>
               <div className="flex items-center gap-2 p-3 pt-6">
                 <Avatar name={viewing[idx].author.fullName} src={viewing[idx].author.avatarUrl} size="sm" />
-                <span className="text-sm font-medium text-white">{viewing[idx].author.fullName}</span>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium leading-tight text-white">{viewing[idx].author.fullName}</span>
+                  <span className="text-xs text-white/60">{timeAgo(viewing[idx].createdAt)}</span>
+                </div>
                 {viewingIsMine && (
                   <button onClick={(e) => { e.stopPropagation(); removeStory.mutate(viewing[idx].id); }}
                     className="ml-auto flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1 text-xs text-white hover:bg-red-500/80">

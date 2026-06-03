@@ -79,7 +79,7 @@ export function Sidebar() {
         {isSidebarOpen && (
           <div className="fixed inset-0 z-50 lg:hidden">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={toggleSidebar} />
+              className="absolute inset-0 bg-ink/50" onClick={toggleSidebar} />
             <motion.div
               initial={{ x: -320 }} animate={{ x: 0 }} exit={{ x: -320 }}
               transition={{ type: "spring", stiffness: 380, damping: 34 }}

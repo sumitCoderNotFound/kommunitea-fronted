@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 import { EmojiPicker } from "@/components/ui/EmojiPicker";
 import { messageService } from "@/services/messageService";
 import { useAuthStore } from "@/store/authStore";
+import { useToast } from "@/hooks/useToast";
 import { timeAgo } from "@/utils/format";
 import { cn } from "@/utils/cn";
 
@@ -17,8 +18,10 @@ export function MessagesPage() {
   const [params] = useSearchParams();
   const qc = useQueryClient();
   const me = useAuthStore((s) => s.user);
+  const toast = useToast();
   const [tab, setTab] = useState<"inbox" | "requests">("inbox");
   const [activeId, setActiveId] = useState<string | null>(null);
+  const startedFor = useRef<string | null>(null);
   const [text, setText] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -31,8 +34,17 @@ export function MessagesPage() {
 
   useEffect(() => {
     const userId = params.get("user");
-    if (userId) messageService.start(userId).then((c) => { setActiveId(c.id); qc.invalidateQueries({ queryKey: ["conversations"] }); });
-  }, [params, qc]);
+    if (!userId) return;
+    if (startedFor.current === userId) return; // avoid double-create (StrictMode)
+    startedFor.current = userId;
+    messageService.start(userId)
+      .then((c) => {
+        setActiveId(c.id);
+        qc.invalidateQueries({ queryKey: ["conversations"] });
+        qc.invalidateQueries({ queryKey: ["msg-requests"] });
+      })
+      .catch((e) => toast.error("Couldn't open the chat: " + (e as Error).message));
+  }, [params, qc, toast]);
 
   const { data: messages = [] } = useQuery({
     queryKey: ["messages", activeId], queryFn: () => messageService.messages(activeId!),
@@ -43,7 +55,12 @@ export function MessagesPage() {
 
   const send = useMutation({
     mutationFn: (body: string) => messageService.send(activeId!, body),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["messages", activeId] }); qc.invalidateQueries({ queryKey: ["conversations"] }); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["messages", activeId] });
+      qc.invalidateQueries({ queryKey: ["conversations"] });
+      qc.invalidateQueries({ queryKey: ["msg-requests"] });
+    },
+    onError: (e) => toast.error("Message failed to send: " + (e as Error).message),
   });
   const accept = useMutation({
     mutationFn: (id: string) => messageService.accept(id),

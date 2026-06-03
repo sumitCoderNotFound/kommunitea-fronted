@@ -10,15 +10,28 @@ export type PostCategory =
   | "jobs" | "internships" | "accommodation" | "visa_psw"
   | "university_life" | "events" | "tech" | "collaboration" | "success_stories";
 
+export type UserType = "student" | "graduate" | "professional" | "recruiter";
+
 export interface User {
   id: string;
   fullName: string;
   email: string;
   avatarUrl?: string;
+  userType?: UserType;
   university?: string;
   course?: string;
+  studyLevel?: string;
   graduationDate?: string;
   intakeYear?: string;
+  studentEmail?: string;
+  company?: string;
+  jobTitle?: string;
+  yearsExperience?: string;
+  industry?: string;
+  hiringFor?: string;
+  displayCompany?: boolean;
+  openToNetworking?: boolean;
+  openToReferrals?: boolean;
   city?: string;
   status?: StudentStatus;
   skills: string[];

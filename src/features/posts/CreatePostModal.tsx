@@ -10,6 +10,7 @@ import { EmojiPicker } from "@/components/ui/EmojiPicker";
 import { useUIStore } from "@/store/uiStore";
 import { useCreatePost } from "@/hooks/usePosts";
 import { useToast } from "@/hooks/useToast";
+import { useConfirm } from "@/hooks/useConfirm";
 import { CATEGORIES } from "@/constants";
 import type { PostCategory } from "@/types";
 
@@ -24,11 +25,12 @@ export function CreatePostModal() {
   const { isCreatePostOpen, setCreatePostOpen } = useUIStore();
   const createPost = useCreatePost();
   const toast = useToast();
+  const confirm = useConfirm();
 
   const { register, handleSubmit, control, reset, setValue, getValues, formState: { errors } } =
     useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: { category: "university_life" } });
 
-  const onSubmit = async (values: FormValues) => {
+  const doPost = async (values: FormValues) => {
     try {
       await createPost.mutateAsync({
         body: values.body,
@@ -41,6 +43,16 @@ export function CreatePostModal() {
     } catch (e) {
       toast.error((e as Error).message);
     }
+  };
+
+  const onSubmit = (values: FormValues) => {
+    confirm({
+      title: "Share this post?",
+      message: "Your post will be visible to the community.",
+      confirmLabel: "Yes, post it",
+      cancelLabel: "Cancel",
+      onConfirm: () => doPost(values),
+    });
   };
 
   return (
