@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
 import { ImageUploader } from "@/components/ui/ImageUploader";
+import { AvatarPicker } from "@/components/ui/AvatarPicker";
 import { Combobox } from "@/components/ui/Combobox";
 import { MultiCombobox } from "@/components/ui/MultiCombobox";
 import {
@@ -38,6 +39,7 @@ function CB({ control, name, label, options, allowOther, placeholder, error }: {
 export function OnboardingForm() {
   const [step, setStep] = useState(0);
   const [avatar, setAvatar] = useState<File | null>(null);
+  const [showPicker, setShowPicker] = useState(false);
   const { user, setUser } = useAuthStore();
   const toast = useToast();
   const navigate = useNavigate();
@@ -125,9 +127,16 @@ export function OnboardingForm() {
         {step === 0 && (
           <>
             <div className="flex items-center gap-4">
-              <Avatar name={user?.fullName ?? "U"} size="lg" />
-              <ImageUploader value={avatar} onChange={setAvatar} className="flex-1" />
+              <Avatar name={user?.fullName ?? "U"} src={avatar ? URL.createObjectURL(avatar) : undefined} size="lg" />
+              <div className="flex-1 space-y-2">
+                <ImageUploader value={avatar} onChange={setAvatar} className="flex-1" />
+                <button type="button" onClick={() => setShowPicker((s) => !s)}
+                  className="text-sm font-medium text-coral hover:underline">
+                  {showPicker ? "Hide avatars" : "Or pick a fun avatar"}
+                </button>
+              </div>
             </div>
+            {showPicker && <AvatarPicker onPick={setAvatar} seedBase={user?.fullName ?? "kommunitea"} />}
             <Input label="Full name" placeholder="e.g. Faraz Mohammed" error={errors.fullName?.message} {...register("fullName")} />
             <Controller control={control} name="userType" render={({ field }) => (
               <div>
@@ -136,7 +145,7 @@ export function OnboardingForm() {
                   {USER_TYPE_OPTIONS.map((opt) => (
                     <button type="button" key={opt.value} onClick={() => field.onChange(opt.value)}
                       className={cn("rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors",
-                        field.value === opt.value ? "border-coral bg-coral text-white" : "border-sand-border bg-white text-ink-soft hover:border-coral")}>
+                        field.value === opt.value ? "border-coral bg-coral text-white" : "border-sand-border bg-sand-card text-ink-soft hover:border-coral")}>
                       {opt.label}
                     </button>
                   ))}
@@ -175,11 +184,11 @@ export function OnboardingForm() {
                 {isRecruiter && <Input label="Hiring for" placeholder="e.g. Graduate software roles" {...register("hiringFor")} />}
                 {isPro && (
                   <Controller control={control} name="displayCompany" render={({ field }) => (
-                    <label className="flex items-center justify-between rounded-xl border border-sand-border bg-white px-3.5 py-2.5">
+                    <label className="flex items-center justify-between rounded-xl border border-sand-border bg-sand-card px-3.5 py-2.5">
                       <span className="text-sm text-ink-soft">Display my company publicly?</span>
                       <button type="button" onClick={() => field.onChange(!field.value)}
                         className={cn("relative h-6 w-11 rounded-full transition-colors", field.value ? "bg-coral" : "bg-sand-border")}>
-                        <span className={cn("absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all", field.value ? "left-[22px]" : "left-0.5")} />
+                        <span className={cn("absolute top-0.5 h-5 w-5 rounded-full bg-sand-card transition-all", field.value ? "left-[22px]" : "left-0.5")} />
                       </button>
                     </label>
                   )} />
@@ -209,7 +218,7 @@ export function OnboardingForm() {
                       <button type="button" key={opt.value}
                         onClick={() => field.onChange(active ? field.value.filter((v) => v !== opt.value) : [...field.value, opt.value])}
                         className={cn("rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
-                          active ? "border-coral bg-coral text-white" : "border-sand-border bg-white text-ink-soft hover:border-coral")}>
+                          active ? "border-coral bg-coral text-white" : "border-sand-border bg-sand-card text-ink-soft hover:border-coral")}>
                         {opt.label}
                       </button>
                     );

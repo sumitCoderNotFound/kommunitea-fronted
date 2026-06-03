@@ -25,7 +25,7 @@ export function AIToolsPage() {
     <div className="mx-auto max-w-2xl space-y-5">
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={springy}
         className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ink text-coral">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#1E1E2D] text-coral">
           <Sparkles className="h-6 w-6" />
         </div>
         <div>
@@ -38,7 +38,7 @@ export function AIToolsPage() {
         {tabs.map((t) => (
           <button key={t.id} onClick={() => setTab(t.id)}
             className={cn("flex flex-1 items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors",
-              tab === t.id ? "border-coral bg-coral text-white shadow-soft" : "border-sand-border bg-white text-ink-soft hover:border-coral")}>
+              tab === t.id ? "border-coral bg-coral text-white shadow-soft" : "border-sand-border bg-sand-card text-ink-soft hover:border-coral")}>
             <t.icon className="h-4 w-4" /> <span className="hidden sm:inline">{t.label}</span>
           </button>
         ))}
@@ -58,7 +58,7 @@ export function AIToolsPage() {
 function AIBadge({ powered }: { powered: boolean }) {
   return (
     <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
-      powered ? "bg-ink text-coral" : "bg-sand text-ink-muted")}>
+      powered ? "bg-[#1E1E2D] text-coral" : "bg-sand text-ink-muted")}>
       <Sparkles className="h-3 w-3" /> {powered ? "AI powered" : "Smart suggestions"}
     </span>
   );
@@ -110,7 +110,7 @@ function CVReview() {
       <p className="text-sm text-ink-soft">Paste your CV text and get instant, structured feedback.</p>
       <textarea value={text} onChange={(e) => setText(e.target.value)} rows={7}
         placeholder="Paste your CV here..."
-        className="w-full rounded-xl border border-sand-border bg-white p-3 text-sm focus-visible:focus-ring" />
+        className="w-full rounded-xl border border-sand-border bg-sand-card p-3 text-sm focus-visible:focus-ring" />
       <Button onClick={() => review.mutate()} isLoading={review.isPending} disabled={text.trim().length < 40}>
         <FileText className="h-4 w-4" /> Review my CV
       </Button>

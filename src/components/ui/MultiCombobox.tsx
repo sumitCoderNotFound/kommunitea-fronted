@@ -58,10 +58,10 @@ export function MultiCombobox({ label, values, onChange, options, placeholder = 
         <input value={query} onFocus={() => setOpen(true)} onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
           onKeyDown={(e) => { if (e.key === "Enter" && allowCustom && query.trim()) { e.preventDefault(); add(query.trim()); } }}
           placeholder={placeholder}
-          className={cn("w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm outline-none",
+          className={cn("w-full rounded-xl border bg-sand-card px-3.5 py-2.5 text-sm outline-none",
             error ? "border-red-400" : "border-sand-border focus:border-coral")} />
         {open && (available.length > 0 || (allowCustom && query.trim())) && (
-          <div className="absolute z-30 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-sand-border bg-white py-1 shadow-lift">
+          <div className="absolute z-30 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-sand-border bg-sand-card py-1 shadow-lift">
             {allowCustom && query.trim() && !available.includes(query.trim()) && (
               <button type="button" onClick={() => add(query.trim())}
                 className="flex w-full items-center gap-2 px-3.5 py-2 text-left text-sm text-coral hover:bg-sand">

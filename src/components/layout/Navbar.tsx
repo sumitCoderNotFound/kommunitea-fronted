@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Bell, Plus, LogOut, Menu, Mail } from "lucide-react";
+import { Bell, Plus, LogOut, Menu, Mail, Sun, Moon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { notificationService } from "@/services/notificationService";
 import { messageService } from "@/services/messageService";
+import { useTheme } from "@/hooks/useTheme";
 import { UserSearch } from "@/features/profile/UserSearch";
 import { useAuthStore } from "@/store/authStore";
 import { useUIStore } from "@/store/uiStore";
@@ -14,6 +15,7 @@ export function Navbar() {
   const { user, logout } = useAuthStore();
   const { setCreatePostOpen, toggleSidebar } = useUIStore();
   const navigate = useNavigate();
+  const { theme, toggle } = useTheme();
   const { data: unread = 0 } = useQuery({
     queryKey: ["notif-count"],
     queryFn: notificationService.unreadCount,
@@ -49,6 +51,9 @@ export function Navbar() {
           <Button size="sm" onClick={() => setCreatePostOpen(true)} className="hidden sm:inline-flex">
             <Plus className="h-4 w-4" /> Post
           </Button>
+          <button onClick={toggle} className="rounded-xl p-2 hover:bg-ink/5" aria-label="Toggle theme">
+            {theme === "dark" ? <Sun className="h-5 w-5 text-ink-soft" /> : <Moon className="h-5 w-5 text-ink-soft" />}
+          </button>
           <Link to={ROUTES.messages} className="relative rounded-xl p-2 hover:bg-ink/5" aria-label="Messages">
             <Mail className="h-5 w-5 text-ink-soft" />
             {msgUnread > 0 && (

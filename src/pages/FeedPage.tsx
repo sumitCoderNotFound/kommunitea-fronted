@@ -53,7 +53,7 @@ export function FeedPage() {
           <Chip active={!activeCategory} onClick={() => setParams({})}>All</Chip>
           {CATEGORIES.map((c) => (
             <Chip key={c.value} active={activeCategory === c.value} onClick={() => setParams({ category: c.value })}>
-              {c.emoji} {c.label}
+              {c.label}
             </Chip>
           ))}
         </div>
@@ -96,7 +96,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   return (
     <motion.button whileTap={{ scale: 0.92 }} whileHover={{ y: -2 }} onClick={onClick}
       className={cn("rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
-        active ? "border-coral bg-coral text-white shadow-soft" : "border-sand-border bg-white text-ink-soft hover:border-coral")}>
+        active ? "border-coral bg-coral text-white shadow-soft" : "border-sand-border bg-sand-card text-ink-soft hover:border-coral")}>
       {children}
     </motion.button>
   );

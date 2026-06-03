@@ -92,7 +92,7 @@ export function PostCard({ post, onLike, onSave }: PostCardProps) {
             </div>
             <p className="truncate text-xs text-ink-muted">{post.author.university} · {timeAgo(post.createdAt)}</p>
           </div>
-          {category && <span className="rounded-full bg-sand px-2.5 py-1 text-xs font-medium text-ink-soft">{category.emoji} {category.label}</span>}
+          {category && <span className="rounded-full bg-sand px-2.5 py-1 text-xs font-medium text-ink-soft">{category.label}</span>}
           {!isMine && (
             <div className="relative">
               <button onClick={() => setMenuOpen((o) => !o)} className="rounded-lg p-1 text-ink-muted hover:bg-ink/5">
@@ -103,7 +103,7 @@ export function PostCard({ post, onLike, onSave }: PostCardProps) {
                   <>
                     <div className="fixed inset-0 z-30" onClick={() => setMenuOpen(false)} />
                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-                      className="absolute right-0 top-8 z-40 w-40 overflow-hidden rounded-xl border border-sand-border bg-white py-1 shadow-lift">
+                      className="absolute right-0 top-8 z-40 w-40 overflow-hidden rounded-xl border border-sand-border bg-sand-card py-1 shadow-lift">
                       <button onClick={handleReport} className="flex w-full items-center gap-2 px-3 py-2 text-sm text-ink-soft hover:bg-sand">
                         <Flag className="h-4 w-4" /> Report post
                       </button>
@@ -168,7 +168,7 @@ export function PostCard({ post, onLike, onSave }: PostCardProps) {
                   <input value={commentText} onChange={(e) => setCommentText(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && submitComment()}
                     placeholder="Write a comment..."
-                    className="h-9 flex-1 rounded-full border border-sand-border bg-white px-4 text-sm focus-visible:focus-ring" />
+                    className="h-9 flex-1 rounded-full border border-sand-border bg-sand-card px-4 text-sm focus-visible:focus-ring" />
                   <EmojiPicker onPick={(e) => setCommentText((c) => c + e)} />
                   <motion.button whileTap={{ scale: 0.9 }} onClick={submitComment}
                     className="flex h-9 w-9 items-center justify-center rounded-full bg-coral text-white">

@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Card } from "@/components/ui/Card";
+import { Avatar } from "@/components/ui/Avatar";
+import { AvatarPicker } from "@/components/ui/AvatarPicker";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
@@ -15,6 +18,16 @@ import type { User } from "@/types";
 export function EditProfilePage() {
   const { user, setUser } = useAuthStore();
   const toast = useToast();
+  const [showPicker, setShowPicker] = useState(false);
+
+  const handleAvatarPick = async (file: File) => {
+    try {
+      const updated = await profileService.uploadAvatar(file);
+      setUser(updated);
+      toast.success("Avatar updated");
+      setShowPicker(false);
+    } catch (e) { toast.error((e as Error).message); }
+  };
   const { register, handleSubmit, control, formState: { isSubmitting } } = useForm<Partial<User>>({
     defaultValues: {
       fullName: user?.fullName, university: user?.university, course: user?.course,
@@ -38,6 +51,17 @@ export function EditProfilePage() {
     <div className="mx-auto max-w-2xl">
       <h1 className="mb-4 font-display text-2xl font-bold">Edit profile</h1>
       <Card className="p-6">
+        {/* Avatar */}
+        <div className="mb-5">
+          <div className="mb-3 flex items-center gap-4">
+            <Avatar name={user?.fullName ?? "U"} src={user?.avatarUrl} size="lg" />
+            <button type="button" onClick={() => setShowPicker((s) => !s)}
+              className="text-sm font-medium text-coral hover:underline">
+              {showPicker ? "Hide avatars" : "Change avatar"}
+            </button>
+          </div>
+          {showPicker && <AvatarPicker onPick={handleAvatarPick} seedBase={user?.fullName ?? "kommunitea"} />}
+        </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Input label="Full name" {...register("fullName")} />
           <div className="grid gap-4 sm:grid-cols-2">

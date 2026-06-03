@@ -80,7 +80,7 @@ export function SettingsPage() {
           <button
             onClick={() => togglePrivacy.mutate(!user?.isPrivate)}
             className={`relative h-7 w-12 rounded-full transition-colors ${user?.isPrivate ? "bg-coral" : "bg-sand-border"}`}>
-            <motion.span layout className="absolute top-0.5 h-6 w-6 rounded-full bg-white shadow"
+            <motion.span layout className="absolute top-0.5 h-6 w-6 rounded-full bg-sand-card shadow"
               animate={{ left: user?.isPrivate ? 22 : 2 }} transition={{ type: "spring", stiffness: 500, damping: 30 }} />
           </button>
         </div>

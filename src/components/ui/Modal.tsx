@@ -32,7 +32,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 12 }}
             transition={springy}
-            className={cn("relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-lift", className)}>
+            className={cn("relative z-10 w-full max-w-lg rounded-2xl bg-sand-card p-6 shadow-lift", className)}>
             <div className="mb-4 flex items-center justify-between">
               {title && <h3 className="text-lg font-semibold">{title}</h3>}
               <button onClick={onClose} className="ml-auto rounded-lg p-1.5 text-ink-muted hover:bg-ink/5">

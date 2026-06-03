@@ -4,7 +4,7 @@ export function TermsPage() {
   return (
     <LegalLayout title="Terms of Service" updated="June 2026">
       <p>By using Kommunitea you agree to these Terms. Kommunitea is operated by Sumit Malviya as an independent project. If you do not agree, please do not use the platform.</p>
-      <p className="rounded-xl bg-white p-4 text-sm text-ink-muted">This document is provided for transparency and is not legal advice.</p>
+      <p className="rounded-xl bg-sand-card p-4 text-sm text-ink-muted">This document is provided for transparency and is not legal advice.</p>
 
       <H2>Eligibility</H2>
       <p>You must be at least 16 years old to use Kommunitea. You are responsible for keeping your login details secure.</p>

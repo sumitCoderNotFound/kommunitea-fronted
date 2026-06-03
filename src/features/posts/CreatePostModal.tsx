@@ -71,7 +71,7 @@ export function CreatePostModal() {
         </div>
         <Select
           label="Category"
-          options={CATEGORIES.map((c) => ({ value: c.value, label: `${c.emoji} ${c.label}` }))}
+          options={CATEGORIES.map((c) => ({ value: c.value, label: c.label }))}
           error={errors.category?.message}
           {...register("category")}
         />

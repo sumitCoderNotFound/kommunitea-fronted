@@ -69,7 +69,7 @@ export function StoriesBar() {
             <motion.div whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
               className={cn("relative rounded-full p-[2.5px]",
                 myStories.length ? "bg-gradient-to-tr from-coral via-orange-400 to-amber-300" : "")}>
-              <div className={cn("rounded-full", myStories.length ? "bg-white p-[2px]" : "")}>
+              <div className={cn("rounded-full", myStories.length ? "bg-sand-card p-[2px]" : "")}>
                 <div className={cn("relative flex h-16 w-16 items-center justify-center rounded-full",
                   myStories.length ? "" : "border-2 border-dashed border-coral/50 bg-coral/5")}>
                   <Avatar name={user?.fullName ?? "You"} src={user?.avatarUrl} size="md" />
@@ -88,7 +88,7 @@ export function StoriesBar() {
             <button key={i} onClick={() => openStory(group)} className="flex shrink-0 flex-col items-center gap-1.5">
               <motion.div whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
                 className="rounded-full bg-gradient-to-tr from-coral via-orange-400 to-amber-300 p-[2.5px]">
-                <div className="rounded-full bg-white p-[2px]">
+                <div className="rounded-full bg-sand-card p-[2px]">
                   <Avatar name={group[0].author.fullName} src={group[0].author.avatarUrl} size="md" />
                 </div>
               </motion.div>
@@ -106,12 +106,12 @@ export function StoriesBar() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4">
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-              className="w-full max-w-sm overflow-hidden rounded-2xl bg-white">
+              className="w-full max-w-sm overflow-hidden rounded-2xl bg-sand-card">
               <div className="flex items-center justify-between p-3">
                 <p className="font-semibold">Preview your story</p>
                 <button onClick={() => { setPreview(null); setCaption(""); }} className="rounded-lg p-1 hover:bg-ink/5"><X className="h-5 w-5" /></button>
               </div>
-              <img src={preview.url} alt="" className="max-h-[55vh] w-full object-contain bg-ink" />
+              <img src={preview.url} alt="" className="max-h-[55vh] w-full object-contain bg-black" />
               <div className="space-y-3 p-3">
                 <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="Add a caption (optional)..."
                   className="h-10 w-full rounded-xl border border-sand-border px-3 text-sm focus-visible:focus-ring" />
@@ -135,11 +135,11 @@ export function StoriesBar() {
             <button className="absolute right-4 top-4 text-white/80 hover:text-white" onClick={() => setViewing(null)}><X className="h-7 w-7" /></button>
             <button className="absolute left-4 text-white/60 hover:text-white" onClick={(e) => { e.stopPropagation(); prev(); }}><ChevronLeft className="h-8 w-8" /></button>
             <motion.div key={idx} initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-              className="relative max-h-[80vh] w-full max-w-sm overflow-hidden rounded-2xl bg-ink" onClick={(e) => e.stopPropagation()}>
+              className="relative max-h-[80vh] w-full max-w-sm overflow-hidden rounded-2xl bg-black" onClick={(e) => e.stopPropagation()}>
               <div className="absolute left-3 right-3 top-3 z-10 flex gap-1">
                 {viewing.map((_, i) => (
-                  <div key={i} className="h-1 flex-1 rounded-full bg-white/30">
-                    <div className={cn("h-full rounded-full bg-white", i <= idx ? "w-full" : "w-0")} />
+                  <div key={i} className="h-1 flex-1 rounded-full bg-sand-card/30">
+                    <div className={cn("h-full rounded-full bg-sand-card", i <= idx ? "w-full" : "w-0")} />
                   </div>
                 ))}
               </div>
@@ -151,7 +151,7 @@ export function StoriesBar() {
                 </div>
                 {viewingIsMine && (
                   <button onClick={(e) => { e.stopPropagation(); removeStory.mutate(viewing[idx].id); }}
-                    className="ml-auto flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1 text-xs text-white hover:bg-red-500/80">
+                    className="ml-auto flex items-center gap-1 rounded-lg bg-sand-card/10 px-2 py-1 text-xs text-white hover:bg-red-500/80">
                     <Trash2 className="h-3.5 w-3.5" /> Delete
                   </button>
                 )}

@@ -1,31 +1,30 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        // Kommunitea — SlothUI-style: indigo/violet accent on clean cool-white
+        // Tokens map to CSS variables so the whole app re-themes (light/dark)
+        // by toggling the `.dark` class on <html>.
         ink: {
-          DEFAULT: "#1E1E2D", // near-black slate — headings & primary text
-          soft: "#3F3F52",
-          muted: "#8A8FA3",
+          DEFAULT: "rgb(var(--ink) / <alpha-value>)",
+          soft: "rgb(var(--ink-soft) / <alpha-value>)",
+          muted: "rgb(var(--ink-muted) / <alpha-value>)",
         },
-        // "coral" token now maps to SlothUI indigo/violet (kept the name so all
-        // existing classes recolor automatically)
         coral: {
-          DEFAULT: "#5B5FEF", // primary accent — buttons, links, active
-          soft: "#7C80F5",
-          dark: "#4A4DD6",
+          DEFAULT: "rgb(var(--coral) / <alpha-value>)",
+          soft: "rgb(var(--coral-soft) / <alpha-value>)",
+          dark: "rgb(var(--coral-dark) / <alpha-value>)",
         },
         sky: {
-          DEFAULT: "#5B5FEF",
-          soft: "#EEF0FF", // light indigo tint for chips/cards
+          DEFAULT: "rgb(var(--coral) / <alpha-value>)",
+          soft: "rgb(var(--sky-soft) / <alpha-value>)",
         },
-        // "sand" token now maps to the cool white/grey surfaces
         sand: {
-          DEFAULT: "#F6F7FB", // page background
-          card: "#FFFFFF",
-          border: "#ECEDF3",
+          DEFAULT: "rgb(var(--sand) / <alpha-value>)",
+          card: "rgb(var(--sand-card) / <alpha-value>)",
+          border: "rgb(var(--sand-border) / <alpha-value>)",
         },
         success: "#16A34A",
         warn: "#F59E0B",

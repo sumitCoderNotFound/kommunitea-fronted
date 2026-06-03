@@ -143,7 +143,7 @@ export function MessagesPage() {
                     <motion.div key={m.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                       className={cn("flex", mine ? "justify-end" : "justify-start")}>
                       <div className={cn("max-w-[75%] rounded-2xl px-3.5 py-2 text-sm",
-                        mine ? "rounded-br-md bg-coral text-white" : "rounded-bl-md border border-sand-border bg-white text-ink")}>
+                        mine ? "rounded-br-md bg-coral text-white" : "rounded-bl-md border border-sand-border bg-sand-card text-ink")}>
                         {m.body}
                         <span className={cn("mt-0.5 block text-[10px]", mine ? "text-white/70" : "text-ink-muted")}>{timeAgo(m.createdAt)}</span>
                       </div>
@@ -154,7 +154,7 @@ export function MessagesPage() {
               </div>
               <div className="flex items-center gap-2 border-t border-sand-border p-3">
                 <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && submit()}
-                  placeholder="Type a message..." className="h-10 flex-1 rounded-full border border-sand-border bg-white px-4 text-sm focus-visible:focus-ring" />
+                  placeholder="Type a message..." className="h-10 flex-1 rounded-full border border-sand-border bg-sand-card px-4 text-sm focus-visible:focus-ring" />
                 <EmojiPicker onPick={(e) => setText((t) => t + e)} />
                 <motion.button whileTap={{ scale: 0.9 }} onClick={submit}
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-coral text-white"><Send className="h-4 w-4" /></motion.button>

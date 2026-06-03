@@ -32,7 +32,7 @@ export class ErrorBoundary extends Component<Props, State> {
               Try again
             </button>
             <button onClick={() => window.location.assign("/feed")}
-              className="rounded-xl border border-sand-border bg-white px-4 py-2 text-sm font-medium text-ink-soft hover:border-coral">
+              className="rounded-xl border border-sand-border bg-sand-card px-4 py-2 text-sm font-medium text-ink-soft hover:border-coral">
               Go to feed
             </button>
           </div>

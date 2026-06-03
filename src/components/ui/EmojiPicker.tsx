@@ -31,7 +31,7 @@ export function EmojiPicker({ onPick, className }: EmojiPickerProps) {
           <>
             <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
             <motion.div initial={{ opacity: 0, scale: 0.9, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }}
-              className="absolute bottom-11 right-0 z-50 w-64 rounded-2xl border border-sand-border bg-white p-3 shadow-lift">
+              className="absolute bottom-11 right-0 z-50 w-64 rounded-2xl border border-sand-border bg-sand-card p-3 shadow-lift">
               <div className="mb-2 flex gap-1">
                 {GROUPS.map((g, i) => (
                   <button key={g.label} onClick={() => setGroup(i)}

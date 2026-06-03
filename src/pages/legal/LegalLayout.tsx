@@ -4,7 +4,7 @@ import { ROUTES, APP_NAME } from "@/constants";
 export function LegalLayout({ title, updated, children }: { title: string; updated?: string; children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-sand">
-      <header className="border-b border-sand-border bg-white">
+      <header className="border-b border-sand-border bg-sand-card">
         <div className="container-app flex h-16 items-center justify-between">
           <Link to={ROUTES.landing} className="flex items-center gap-2">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-coral to-coral-dark font-display text-lg font-bold text-white">K</span>

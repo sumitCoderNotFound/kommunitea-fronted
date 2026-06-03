@@ -34,7 +34,7 @@ export function Combobox({ label, value, onChange, options, placeholder = "Selec
         {label && <label className="mb-1.5 block text-sm font-medium text-ink-soft">{label}</label>}
         <input autoFocus value={value} onChange={(e) => onChange(e.target.value)}
           placeholder="Type your answer..."
-          className="w-full rounded-xl border border-sand-border bg-white px-3.5 py-2.5 text-sm outline-none focus:border-coral" />
+          className="w-full rounded-xl border border-sand-border bg-sand-card px-3.5 py-2.5 text-sm outline-none focus:border-coral" />
         <button type="button" onClick={() => { setIsOther(false); onChange(""); }}
           className="mt-1 text-xs text-coral hover:underline">← back to list</button>
         {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
@@ -47,13 +47,13 @@ export function Combobox({ label, value, onChange, options, placeholder = "Selec
       {label && <label className="mb-1.5 block text-sm font-medium text-ink-soft">{label}</label>}
       <div className="relative">
         <button type="button" onClick={() => setOpen((o) => !o)}
-          className={cn("flex w-full items-center justify-between rounded-xl border bg-white px-3.5 py-2.5 text-left text-sm outline-none",
+          className={cn("flex w-full items-center justify-between rounded-xl border bg-sand-card px-3.5 py-2.5 text-left text-sm outline-none",
             error ? "border-red-400" : "border-sand-border focus:border-coral")}>
           <span className={value ? "text-ink" : "text-ink-muted"}>{value || placeholder}</span>
           <ChevronDown className="h-4 w-4 text-ink-muted" />
         </button>
         {open && (
-          <div className="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-sand-border bg-white py-1 shadow-lift">
+          <div className="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-sand-border bg-sand-card py-1 shadow-lift">
             <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search..."
               className="mb-1 w-[calc(100%-1rem)] mx-2 rounded-lg border border-sand-border px-2.5 py-1.5 text-sm outline-none focus:border-coral" />
             {filtered.map((o) => (

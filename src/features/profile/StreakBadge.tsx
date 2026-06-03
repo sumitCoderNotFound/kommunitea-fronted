@@ -34,10 +34,10 @@ export function StreakBadge({ streak, longest, size = "lg", className }: StreakB
         <div className="flex items-baseline gap-1">
           <motion.span
             key={streak}
-            initial={{ scale: 1.4, color: "#F97316" }}
-            animate={{ scale: 1, color: "#1E1E2D" }}
+            initial={{ scale: 1.4 }}
+            animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 400, damping: 18 }}
-            className={cn("font-display font-bold", big ? "text-3xl" : "text-xl")}
+            className={cn("font-display font-bold text-ink", big ? "text-3xl" : "text-xl")}
           >
             {streak}
           </motion.span>

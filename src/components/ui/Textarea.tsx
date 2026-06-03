@@ -18,7 +18,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           id={tId}
           className={cn(
-            "min-h-[110px] w-full resize-y rounded-xl border bg-white px-4 py-3 text-sm text-ink",
+            "min-h-[110px] w-full resize-y rounded-xl border bg-sand-card px-4 py-3 text-sm text-ink",
             "placeholder:text-ink-muted/60 transition-colors focus-visible:focus-ring",
             error ? "border-red-400" : "border-sand-border focus:border-coral",
             className,

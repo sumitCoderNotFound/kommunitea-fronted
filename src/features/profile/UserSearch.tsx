@@ -41,12 +41,12 @@ export function UserSearch() {
         onChange={(e) => { setQ(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         placeholder="Search members by name..."
-        className="h-10 w-full rounded-xl border border-sand-border bg-white pl-9 pr-4 text-sm focus-visible:focus-ring"
+        className="h-10 w-full rounded-xl border border-sand-border bg-sand-card pl-9 pr-4 text-sm focus-visible:focus-ring"
       />
       <AnimatePresence>
         {open && debounced.length >= 2 && (
           <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-            className="absolute z-50 mt-2 w-full overflow-hidden rounded-xl border border-sand-border bg-white shadow-lift">
+            className="absolute z-50 mt-2 w-full overflow-hidden rounded-xl border border-sand-border bg-sand-card shadow-lift">
             {isFetching ? (
               <p className="p-4 text-sm text-ink-muted">Searching...</p>
             ) : results.length === 0 ? (

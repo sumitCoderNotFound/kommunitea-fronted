@@ -15,7 +15,7 @@ export function ToastViewport() {
       {toasts.map((t) => {
         const { icon: Icon, color } = config[t.type];
         return (
-          <div key={t.id} className="flex items-start gap-3 rounded-xl border border-sand-border bg-white p-3.5 shadow-lift animate-fade-up">
+          <div key={t.id} className="flex items-start gap-3 rounded-xl border border-sand-border bg-sand-card p-3.5 shadow-lift animate-fade-up">
             <Icon className={cn("mt-0.5 h-5 w-5 shrink-0", color)} />
             <p className="flex-1 text-sm text-ink">{t.message}</p>
             <button onClick={() => dismissToast(t.id)} className="text-ink-muted hover:text-ink">

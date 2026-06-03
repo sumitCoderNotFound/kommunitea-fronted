@@ -3,7 +3,34 @@
 @tailwind utilities;
 
 @layer base {
-  :root { color-scheme: light; }
+  :root {
+    color-scheme: light;
+    /* Light theme (default) */
+    --ink: 30 30 45;          /* near-black slate */
+    --ink-soft: 63 63 82;
+    --ink-muted: 138 143 163;
+    --coral: 91 95 239;       /* indigo/violet primary */
+    --coral-soft: 124 128 245;
+    --coral-dark: 74 77 214;
+    --sky-soft: 238 240 255;
+    --sand: 246 247 251;       /* page background */
+    --sand-card: 255 255 255;  /* cards */
+    --sand-border: 236 237 243;
+  }
+  .dark {
+    color-scheme: dark;
+    /* Dark theme — deep indigo-navy with violet accent (matches the mockup) */
+    --ink: 237 239 248;        /* near-white primary text */
+    --ink-soft: 191 196 214;
+    --ink-muted: 138 143 168;
+    --coral: 124 128 245;      /* slightly brighter violet on dark */
+    --coral-soft: 146 150 250;
+    --coral-dark: 99 102 241;
+    --sky-soft: 39 40 66;
+    --sand: 13 14 24;          /* page background — near-black navy */
+    --sand-card: 23 24 38;     /* cards — raised navy */
+    --sand-border: 38 40 60;
+  }
   html { -webkit-font-smoothing: antialiased; }
   body {
     @apply bg-sand text-ink font-sans antialiased;

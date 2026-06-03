@@ -47,14 +47,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           {CATEGORIES.map((c) => (
             <NavLink key={c.value} to={`${ROUTES.feed}?category=${c.value}`} onClick={onNavigate}
               className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-ink-soft hover:bg-ink/5">
-              <span>{c.emoji}</span> {c.label}
+              {c.label}
             </NavLink>
           ))}
         </div>
       </div>
 
       <div className="pt-5">
-        <Card className="bg-gradient-to-br from-orange-50 to-coral/10 p-4">
+        <Card className="bg-orange-500/10 p-4">
           <StreakBadge streak={currentStreak} size="sm" />
           <p className="mt-2 text-xs text-ink-muted">Open {APP_NAME} every day to grow your streak 🔥</p>
         </Card>

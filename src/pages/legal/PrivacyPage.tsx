@@ -4,7 +4,7 @@ export function PrivacyPage() {
   return (
     <LegalLayout title="Privacy Policy" updated="June 2026">
       <p>This Privacy Policy explains how Kommunitea collects, uses, and protects your personal data. Kommunitea is currently operated by Sumit Malviya as an independent project. Sumit Malviya is the data controller responsible for the personal data processed through the platform.</p>
-      <p className="rounded-xl bg-white p-4 text-sm text-ink-muted">This document is provided for transparency and is not legal advice. It will be reviewed and expanded as Kommunitea grows.</p>
+      <p className="rounded-xl bg-sand-card p-4 text-sm text-ink-muted">This document is provided for transparency and is not legal advice. It will be reviewed and expanded as Kommunitea grows.</p>
 
       <H2>Who can use Kommunitea</H2>
       <p>Kommunitea is intended for users aged 16 and over. By creating an account you confirm that you are at least 16 years old.</p>

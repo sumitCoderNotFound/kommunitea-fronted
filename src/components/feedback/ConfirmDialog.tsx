@@ -22,7 +22,7 @@ export function ConfirmDialog() {
           <motion.div
             initial={{ opacity: 0, scale: 0.92, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 28 }}
-            className="relative z-10 w-full max-w-sm rounded-2xl bg-white p-6 shadow-lift text-center">
+            className="relative z-10 w-full max-w-sm rounded-2xl bg-sand-card p-6 shadow-lift text-center">
             <div className={cn("mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full",
               confirm.tone === "danger" ? "bg-red-50 text-red-500" : "bg-coral/10 text-coral")}>
               <AlertTriangle className="h-6 w-6" />
@@ -31,7 +31,7 @@ export function ConfirmDialog() {
             {confirm.message && <p className="mt-1 text-sm text-ink-muted">{confirm.message}</p>}
             <div className="mt-5 flex gap-2">
               <button onClick={closeConfirm}
-                className="flex-1 rounded-xl border border-sand-border bg-white py-2.5 text-sm font-medium text-ink-soft hover:bg-ink/5">
+                className="flex-1 rounded-xl border border-sand-border bg-sand-card py-2.5 text-sm font-medium text-ink-soft hover:bg-ink/5">
                 {confirm.cancelLabel}
               </button>
               <button onClick={handleConfirm}
