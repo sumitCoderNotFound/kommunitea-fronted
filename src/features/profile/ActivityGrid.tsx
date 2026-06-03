@@ -53,24 +53,25 @@ export function ActivityGrid({ activity, weeks = 26, showMonths = true }: Activi
   });
 
   return (
-    <div className="overflow-x-auto">
-      <div className="inline-block min-w-full">
-        {showMonths && (
-          <div className="mb-1 flex gap-[3px] pl-7 text-[10px] text-ink-muted">
-            {monthLabels.map((m, i) => (
-              <span key={i} className="w-[13px] shrink-0">{m}</span>
-            ))}
-          </div>
-        )}
-        <div className="flex gap-[3px]">
-          {/* day-of-week labels */}
-          <div className="mr-1 flex flex-col gap-[3px] pt-[0px] text-[9px] text-ink-muted">
-            {["", "Mon", "", "Wed", "", "Fri", ""].map((d, i) => (
-              <span key={i} className="flex h-[13px] items-center">{d}</span>
-            ))}
-          </div>
+    <div className="w-full overflow-hidden">
+      {showMonths && (
+        <div className="mb-1 flex gap-[2px] pl-6 text-[10px] text-ink-muted">
+          {monthLabels.map((m, i) => (
+            <span key={i} className="min-w-0 flex-1 text-center">{m}</span>
+          ))}
+        </div>
+      )}
+      <div className="flex gap-[2px]">
+        {/* day-of-week labels */}
+        <div className="mr-1 flex shrink-0 flex-col gap-[2px] text-[9px] text-ink-muted">
+          {["", "Mon", "", "Wed", "", "Fri", ""].map((d, i) => (
+            <span key={i} className="flex flex-1 items-center">{d}</span>
+          ))}
+        </div>
+        {/* weeks share the remaining width equally so the grid never overflows */}
+        <div className="flex min-w-0 flex-1 gap-[2px]">
           {cols.map((col, ci) => (
-            <div key={ci} className="flex flex-col gap-[3px]">
+            <div key={ci} className="flex min-w-0 flex-1 flex-col gap-[2px]">
               {col.map((day, di) => (
                 <motion.div
                   key={day.key}
@@ -79,17 +80,17 @@ export function ActivityGrid({ activity, weeks = 26, showMonths = true }: Activi
                   transition={{ delay: (ci * 7 + di) * 0.001, type: "spring", stiffness: 500, damping: 30 }}
                   whileHover={{ scale: 1.4, zIndex: 10 }}
                   title={`${day.count} on ${day.key}`}
-                  className={cn("h-[13px] w-[13px] rounded-[3px]", LEVELS[level(day.count)])}
+                  className={cn("aspect-square w-full rounded-[2px]", LEVELS[level(day.count)])}
                 />
               ))}
             </div>
           ))}
         </div>
-        <div className="mt-2 flex items-center justify-end gap-1 text-[10px] text-ink-muted">
-          Less
-          {LEVELS.map((l, i) => <span key={i} className={cn("h-[11px] w-[11px] rounded-[3px]", l)} />)}
-          More
-        </div>
+      </div>
+      <div className="mt-2 flex items-center justify-end gap-1 text-[10px] text-ink-muted">
+        Less
+        {LEVELS.map((l, i) => <span key={i} className={cn("h-[11px] w-[11px] rounded-[3px]", l)} />)}
+        More
       </div>
     </div>
   );

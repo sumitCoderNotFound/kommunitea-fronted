@@ -1,13 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { User, Lock, Globe, LogOut, ChevronRight, Check, X } from "lucide-react";
+import { User, Lock, Globe, LogOut, ChevronRight, Check, X, Download, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import { ROUTES } from "@/constants";
 import { useAuthStore } from "@/store/authStore";
 import { profileService } from "@/services/profileService";
 import { useToast } from "@/hooks/useToast";
+import { useConfirm } from "@/hooks/useConfirm";
 
 export function SettingsPage() {
   const { user, logout, setUser } = useAuthStore();
@@ -21,6 +22,34 @@ export function SettingsPage() {
   });
 
   const { data: requests = [] } = useQuery({ queryKey: ["follow-requests"], queryFn: profileService.myRequests });
+  const confirm = useConfirm();
+
+  const handleDownload = async () => {
+    try {
+      const data = await profileService.downloadMyData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "my-kommunitea-data.json"; a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Your data has been downloaded");
+    } catch (e) { toast.error((e as Error).message); }
+  };
+
+  const handleDelete = () => {
+    confirm({
+      title: "Delete your account?",
+      message: "This permanently removes your account, posts and messages. This cannot be undone.",
+      confirmLabel: "Delete forever", cancelLabel: "Keep my account", tone: "danger",
+      onConfirm: async () => {
+        try {
+          await profileService.deleteAccount();
+          logout();
+          navigate(ROUTES.landing);
+        } catch (e) { toast.error((e as Error).message); }
+      },
+    });
+  };
 
   const accept = useMutation({
     mutationFn: (fromId: string) => profileService.acceptRequest(fromId),
@@ -91,6 +120,44 @@ export function SettingsPage() {
           <LogOut className="h-5 w-5" />
           <span className="flex-1 text-left text-sm font-medium">Log out</span>
         </button>
+      </Card>
+      {/* Privacy & your data (GDPR) */}
+      <Card className="p-5">
+        <h2 className="mb-3 font-display font-semibold">Your data</h2>
+        <div className="space-y-2">
+          <button onClick={handleDownload}
+            className="flex w-full items-center gap-3 rounded-xl px-1 py-2.5 text-left hover:bg-ink/5">
+            <Download className="h-5 w-5 text-ink-muted" />
+            <div className="flex-1">
+              <p className="text-sm font-medium">Download my data</p>
+              <p className="text-xs text-ink-muted">Get a copy of the personal data we hold about you.</p>
+            </div>
+          </button>
+          <button onClick={handleDelete}
+            className="flex w-full items-center gap-3 rounded-xl px-1 py-2.5 text-left hover:bg-red-50">
+            <Trash2 className="h-5 w-5 text-red-500" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-red-600">Delete my account</p>
+              <p className="text-xs text-ink-muted">Permanently remove your account and data. This cannot be undone.</p>
+            </div>
+          </button>
+        </div>
+      </Card>
+
+      {/* Legal */}
+      <Card className="divide-y divide-sand-border p-2">
+        <a href={ROUTES.privacy} className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-ink/5">
+          <span className="flex-1 text-sm font-medium">Privacy Policy</span><ChevronRight className="h-4 w-4 text-ink-muted" />
+        </a>
+        <a href={ROUTES.terms} className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-ink/5">
+          <span className="flex-1 text-sm font-medium">Terms of Service</span><ChevronRight className="h-4 w-4 text-ink-muted" />
+        </a>
+        <a href={ROUTES.guidelines} className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-ink/5">
+          <span className="flex-1 text-sm font-medium">Community Guidelines</span><ChevronRight className="h-4 w-4 text-ink-muted" />
+        </a>
+        <a href={ROUTES.contact} className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-ink/5">
+          <span className="flex-1 text-sm font-medium">Contact Us</span><ChevronRight className="h-4 w-4 text-ink-muted" />
+        </a>
       </Card>
     </div>
   );

@@ -16,6 +16,10 @@ export const ROUTES = {
   notifications: "/notifications",
   messages: "/messages",
   aiTools: "/ai-tools",
+  privacy: "/privacy",
+  terms: "/terms",
+  guidelines: "/community-guidelines",
+  contact: "/contact",
 } as const;
 
 export const LOOKING_FOR_OPTIONS: { value: LookingFor; label: string }[] = [

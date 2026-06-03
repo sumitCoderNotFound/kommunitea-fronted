@@ -58,6 +58,18 @@ export function FeedPage() {
           ))}
         </div>
 
+        {/* Contextual safety disclaimers */}
+        {(activeCategory === "jobs" || activeCategory === "internships") && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">
+            Kommunitea does not guarantee the accuracy of job postings. Please do your own due diligence before applying or sharing personal details.
+          </div>
+        )}
+        {activeCategory === "accommodation" && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">
+            Kommunitea only connects users. We do not verify landlords, properties, or rental agreements. Never send money before proper checks.
+          </div>
+        )}
+
         {isLoading ? (
           <Loader label="Loading the feed..." />
         ) : posts.length === 0 ? (

@@ -16,9 +16,18 @@ import { NotificationsPage } from "@/pages/NotificationsPage";
 import { MessagesPage } from "@/pages/MessagesPage";
 import { AIToolsPage } from "@/pages/AIToolsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
+import { PrivacyPage } from "@/pages/legal/PrivacyPage";
+import { TermsPage } from "@/pages/legal/TermsPage";
+import { GuidelinesPage } from "@/pages/legal/GuidelinesPage";
+import { ContactPage } from "@/pages/legal/ContactPage";
 
 const router = createBrowserRouter([
   { path: ROUTES.landing, element: <LandingPage /> },
+  // Public legal / info pages
+  { path: ROUTES.privacy, element: <PrivacyPage /> },
+  { path: ROUTES.terms, element: <TermsPage /> },
+  { path: ROUTES.guidelines, element: <GuidelinesPage /> },
+  { path: ROUTES.contact, element: <ContactPage /> },
   {
     element: <AuthLayout />,
     children: [

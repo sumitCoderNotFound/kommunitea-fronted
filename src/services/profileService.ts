@@ -14,6 +14,13 @@ export const profileService = {
     const { data } = await apiClient.patch<User>("/profiles/me/", { ...payload, isOnboarded: true });
     return data;
   },
+  async downloadMyData() {
+    const { data } = await apiClient.get("/auth/my-data/");
+    return data;
+  },
+  async deleteAccount() {
+    await apiClient.delete("/auth/delete-account/");
+  },
   async update(payload: Partial<User>) {
     const { data } = await apiClient.patch<User>("/profiles/me/", payload);
     return data;

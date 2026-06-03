@@ -103,6 +103,19 @@ export function LandingPage() {
           </motion.div>
         ))}
       </motion.section>
+
+      {/* footer */}
+      <footer className="border-t border-sand-border bg-white">
+        <div className="container-app flex flex-col items-center justify-between gap-4 py-8 text-sm text-ink-muted sm:flex-row">
+          <p>© 2026 Kommunitea · A free community for UK students & graduates · 16+</p>
+          <div className="flex flex-wrap gap-4">
+            <Link to={ROUTES.privacy} className="hover:text-coral">Privacy</Link>
+            <Link to={ROUTES.terms} className="hover:text-coral">Terms</Link>
+            <Link to={ROUTES.guidelines} className="hover:text-coral">Guidelines</Link>
+            <Link to={ROUTES.contact} className="hover:text-coral">Contact</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

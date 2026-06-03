@@ -4,6 +4,7 @@ import { queryClient } from "@/lib-queryClient";
 import { AppRouter } from "@/routes/AppRouter";
 import { ToastViewport } from "@/components/feedback/Toast";
 import { ConfirmDialog } from "@/components/feedback/ConfirmDialog";
+import { CookieBanner } from "@/components/feedback/CookieBanner";
 import { useAuthStore } from "@/store/authStore";
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
       <AppRouter />
       <ToastViewport />
       <ConfirmDialog />
+      <CookieBanner />
     </QueryClientProvider>
   );
 }
