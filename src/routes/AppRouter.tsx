@@ -15,6 +15,7 @@ import { SettingsPage } from "@/pages/SettingsPage";
 import { NotificationsPage } from "@/pages/NotificationsPage";
 import { MessagesPage } from "@/pages/MessagesPage";
 import { AIToolsPage } from "@/pages/AIToolsPage";
+import { SchedulerPage } from "@/pages/SchedulerPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { PrivacyPage } from "@/pages/legal/PrivacyPage";
 import { TermsPage } from "@/pages/legal/TermsPage";
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
           { path: ROUTES.notifications, element: <NotificationsPage /> },
           { path: ROUTES.messages, element: <MessagesPage /> },
           { path: ROUTES.aiTools, element: <AIToolsPage /> },
+          { path: ROUTES.scheduler, element: <SchedulerPage /> },
         ],
       },
     ],

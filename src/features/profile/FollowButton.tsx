@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, UserPlus, Clock } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { profileService } from "@/services/profileService";
@@ -11,16 +11,24 @@ type State = "none" | "following" | "requested";
 export function FollowButton({ user }: { user: User }) {
   const initial: State = user.isFollowing ? "following" : user.hasRequested ? "requested" : "none";
   const [state, setState] = useState<State>(initial);
+  const qc = useQueryClient();
+
+  // refresh anything that shows follower/following counts or follow state
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: ["profile"] });
+    qc.invalidateQueries({ queryKey: ["suggested-members"] });
+  };
 
   const follow = useMutation({
     mutationFn: () => profileService.follow(user.id),
     onSuccess: (res: { status?: State } | undefined) => {
       setState(res?.status ?? (user.isPrivate ? "requested" : "following"));
+      refresh();
     },
   });
   const unfollow = useMutation({
     mutationFn: () => profileService.unfollow(user.id),
-    onSuccess: () => setState("none"),
+    onSuccess: () => { setState("none"); refresh(); },
   });
 
   if (state === "following") {

@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, User, FileText, Bell, Mail, Settings, Compass, X, Sparkles } from "lucide-react";
+import { Home, User, FileText, Bell, Mail, Settings, Compass, X, Sparkles, CalendarClock } from "lucide-react";
 import { ROUTES, CATEGORIES, APP_NAME } from "@/constants";
 import { useAuthStore } from "@/store/authStore";
 import { useUIStore } from "@/store/uiStore";
@@ -13,6 +13,7 @@ const nav = [
   { to: ROUTES.feed, label: "Community Feed", icon: Home },
   { to: ROUTES.myPosts, label: "My Posts", icon: FileText },
   { to: ROUTES.aiTools, label: "AI Tools", icon: Sparkles },
+  { to: ROUTES.scheduler, label: "Scheduler", icon: CalendarClock },
   { to: ROUTES.messages, label: "Messages", icon: Mail },
   { to: ROUTES.notifications, label: "Notifications", icon: Bell },
   { to: ROUTES.settings, label: "Settings", icon: Settings },

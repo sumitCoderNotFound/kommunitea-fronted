@@ -20,6 +20,7 @@ export const ROUTES = {
   terms: "/terms",
   guidelines: "/community-guidelines",
   contact: "/contact",
+  scheduler: "/scheduler",
 } as const;
 
 export const LOOKING_FOR_OPTIONS: { value: LookingFor; label: string }[] = [
