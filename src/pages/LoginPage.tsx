@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/Button";
 import { ROUTES } from "@/constants";
 import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/hooks/useToast";
+import { GoogleSignInButton } from "@/features/auth/GoogleSignInButton";
 
 const schema = z.object({
-  email: z.string().email("Enter a valid email"),
-  password: z.string().min(6, "At least 6 characters"),
+  email: z.string().min(1, "Enter your email or username"),
+  password: z.string().min(1, "Enter your password"),
 });
 type Values = z.infer<typeof schema>;
 
@@ -38,10 +39,14 @@ export function LoginPage() {
       <h2 className="font-display text-3xl font-bold">Welcome back 👋</h2>
       <p className="mt-1 text-ink-muted">Log in to continue to your tribe.</p>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
-        <Input label="Email" type="email" placeholder="you@university.ac.uk" error={errors.email?.message} {...register("email")} />
+        <Input label="Email or username" type="text" placeholder="you@university.ac.uk or yourhandle" error={errors.email?.message} {...register("email")} />
         <Input label="Password" type="password" placeholder="••••••••" error={errors.password?.message} {...register("password")} />
+        <div className="flex justify-end">
+          <Link to={ROUTES.forgotPassword} className="text-sm font-medium text-coral hover:underline">Forgot password?</Link>
+        </div>
         <Button type="submit" fullWidth size="lg" isLoading={isSubmitting}>Log in</Button>
       </form>
+      <GoogleSignInButton />
       <p className="mt-6 text-center text-sm text-ink-muted">
         New here? <Link to={ROUTES.register} className="font-medium text-coral hover:underline">Create an account</Link>
       </p>

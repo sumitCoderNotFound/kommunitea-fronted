@@ -117,10 +117,11 @@ export function ProfilePage() {
               )}
             </div>
             <div className="mt-3 flex items-center gap-2">
-              <h1 className="font-display text-2xl font-bold">{user.fullName}</h1>
+              <h1 className="font-display text-2xl font-bold">{user.displayName || user.fullName}</h1>
               {user.badge && <VerifiedBadge type={user.badge} />}
               {user.isPrivate && <Lock className="h-4 w-4 text-ink-muted" />}
             </div>
+            {user.username && <p className="text-sm text-ink-muted">@{user.username}</p>}
             {user.userType === "professional" || user.userType === "recruiter" ? (
               <p className="text-ink-muted">
                 {user.jobTitle}

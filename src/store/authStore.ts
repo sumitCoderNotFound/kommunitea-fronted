@@ -9,6 +9,7 @@ interface AuthState {
   isLoading: boolean;
   setUser: (user: User | null) => void;
   login: (email: string, password: string) => Promise<User>;
+  loginWithGoogle: (idToken: string) => Promise<User>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -34,6 +35,17 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         authService.logout();
         set({ user: null, isAuthenticated: false });
+      },
+      loginWithGoogle: async (idToken) => {
+        set({ isLoading: true });
+        try {
+          await authService.googleLogin(idToken);
+          const user = await authService.me();
+          set({ user, isAuthenticated: true });
+          return user;
+        } finally {
+          set({ isLoading: false });
+        }
       },
       refreshUser: async () => {
         try {

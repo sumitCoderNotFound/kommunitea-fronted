@@ -17,7 +17,16 @@ export type UserType =
 export interface User {
   id: string;
   fullName: string;
+  displayName?: string;
+  username?: string | null;
   email: string;
+  isEmailVerified?: boolean;
+  authProvider?: "email" | "google" | "both";
+  phoneCountryCode?: string;
+  phoneNumber?: string;
+  isPhoneVerified?: boolean;
+  whatsappOptIn?: boolean;
+  profileCompletion?: number;
   avatarUrl?: string;
   userType?: UserType;
   university?: string;

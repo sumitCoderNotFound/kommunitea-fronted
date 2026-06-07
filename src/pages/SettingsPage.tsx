@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import { ROUTES } from "@/constants";
 import { useAuthStore } from "@/store/authStore";
+import { authService } from "@/services/authService";
+import { AccountSecurityCard } from "@/features/settings/AccountSecurityCard";
 import { profileService } from "@/services/profileService";
 import { useToast } from "@/hooks/useToast";
 import { useConfirm } from "@/hooks/useConfirm";
@@ -64,6 +66,8 @@ export function SettingsPage() {
     <div className="mx-auto max-w-2xl space-y-4">
       <h1 className="font-display text-2xl font-bold">Settings</h1>
 
+      <AccountSecurityCard />
+
       {/* Privacy */}
       <Card className="p-5">
         <h2 className="mb-3 font-display font-semibold">Account privacy</h2>
@@ -119,6 +123,11 @@ export function SettingsPage() {
           className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-red-600 hover:bg-red-50">
           <LogOut className="h-5 w-5" />
           <span className="flex-1 text-left text-sm font-medium">Log out</span>
+        </button>
+        <button onClick={async () => { await authService.logoutAll(); setUser(null); navigate(ROUTES.landing); }}
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-ink-muted hover:bg-ink/5">
+          <LogOut className="h-5 w-5" />
+          <span className="flex-1 text-left text-sm font-medium">Log out of all devices</span>
         </button>
       </Card>
       {/* Privacy & your data (GDPR) */}

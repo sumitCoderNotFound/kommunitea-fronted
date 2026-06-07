@@ -61,6 +61,8 @@ apiClient.interceptors.response.use(
         const { data } = await axios.post(`${BASE_URL}/auth/refresh/`, { refresh });
         const newAccess = data.access as string;
         localStorage.setItem("ujt_access", newAccess);
+        // Rotation is on: a new refresh token comes back and the old one is blacklisted.
+        if (data.refresh) localStorage.setItem("ujt_refresh", data.refresh as string);
         apiClient.defaults.headers.common.Authorization = `Bearer ${newAccess}`;
         flushQueue(null, newAccess);
         original.headers.Authorization = `Bearer ${newAccess}`;
@@ -74,7 +76,14 @@ apiClient.interceptors.response.use(
       }
     }
 
-    const message = error.response?.data?.detail ?? error.message ?? "Something went wrong";
-    return Promise.reject(new Error(message));
+    const data = error.response?.data as Record<string, unknown> | undefined;
+    let message = data?.detail as string | undefined;
+    if (!message && data && typeof data === "object") {
+      // DRF field errors, e.g. { password: ["This password is too common."] }
+      const first = Object.values(data)[0];
+      if (Array.isArray(first)) message = String(first[0]);
+      else if (typeof first === "string") message = first;
+    }
+    return Promise.reject(new Error(message ?? error.message ?? "Something went wrong"));
   },
 );

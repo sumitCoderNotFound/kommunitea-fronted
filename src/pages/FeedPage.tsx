@@ -4,6 +4,7 @@ import { Inbox, Plus, Link2 } from "lucide-react";
 import { PostCard } from "@/features/posts/PostCard";
 import { RightRail } from "@/features/feed/RightRail";
 import { ForYouRecommendations } from "@/features/feed/ForYouRecommendations";
+import { EmailVerificationBanner } from "@/features/auth/EmailVerificationBanner";
 import { StoriesBar } from "@/features/stories/StoriesBar";
 import { Card } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
@@ -34,6 +35,7 @@ export function FeedPage() {
   return (
     <div className="flex gap-6">
       <div className="min-w-0 flex-1 space-y-4">
+        <EmailVerificationBanner />
         <StoriesBar />
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={springy}>
           <Card className="flex items-center gap-3 p-4">

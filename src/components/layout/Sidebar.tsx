@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, User, FileText, Bell, Mail, Settings, Compass, X, Sparkles, CalendarClock, Users } from "lucide-react";
+import { Home, User, FileText, Bell, Mail, Settings, Compass, X, Sparkles, CalendarClock, Users, GraduationCap } from "lucide-react";
 import { ROUTES, CATEGORIES, APP_NAME } from "@/constants";
 import { useAuthStore } from "@/store/authStore";
 import { useUIStore } from "@/store/uiStore";
@@ -14,6 +14,7 @@ import { cn } from "@/utils/cn";
 const primaryNav = [
   { to: ROUTES.home, label: "Home", icon: Home },
   { to: ROUTES.tribe, label: "Tribe", icon: Users },
+  { to: ROUTES.studyMatch, label: "Study Match", icon: GraduationCap },
   { to: ROUTES.plan, label: "Plan", icon: CalendarClock },
   { to: ROUTES.inbox, label: "Inbox", icon: Mail },
 ];

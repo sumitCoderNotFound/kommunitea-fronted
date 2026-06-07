@@ -7,10 +7,23 @@ import { ROUTES } from "@/constants";
 import { LandingPage } from "@/pages/LandingPage";
 import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
+import { ForgotPasswordPage } from "@/pages/ForgotPasswordPage";
+import { ResetPasswordPage } from "@/pages/ResetPasswordPage";
+import { VerifyEmailPage } from "@/pages/VerifyEmailPage";
+import { ChooseUsernamePage } from "@/pages/ChooseUsernamePage";
+import { UsernameProfilePage } from "@/pages/UsernameProfilePage";
 import { OnboardingPage } from "@/pages/OnboardingPage";
 import { FeedPage } from "@/pages/FeedPage";
 import { ImportSharePage } from "@/pages/ImportSharePage";
 import { TribePage } from "@/pages/TribePage";
+import { StudyMatchHomePage } from "@/pages/study/StudyMatchHomePage";
+import { StudyMatchStartPage } from "@/pages/study/StudyMatchStartPage";
+import { StudyMatchResultsPage } from "@/pages/study/StudyMatchResultsPage";
+import { StudyMatchCountriesPage } from "@/pages/study/StudyMatchCountriesPage";
+import {
+  StudyMatchCitiesPage, StudyMatchCoursesPage, StudyMatchSavedPage,
+  StudyMatchChecklistPage, StudyMatchUniversitiesPage,
+} from "@/pages/study/StudyMatchMiscPages";
 import { CareerToolsPage } from "@/pages/CareerToolsPage";
 import { PostDetailPage } from "@/pages/PostDetailPage";
 import { JobDetailPage } from "@/pages/JobDetailPage";
@@ -47,6 +60,10 @@ const router = createBrowserRouter([
     children: [
       { path: ROUTES.login, element: <LoginPage /> },
       { path: ROUTES.register, element: <RegisterPage /> },
+      { path: ROUTES.forgotPassword, element: <ForgotPasswordPage /> },
+      { path: ROUTES.resetPassword, element: <ResetPasswordPage /> },
+      { path: ROUTES.verifyEmail, element: <VerifyEmailPage /> },
+      { path: ROUTES.chooseUsername, element: <ChooseUsernamePage /> },
     ],
   },
   // Onboarding: authenticated but does NOT require completed onboarding
@@ -65,6 +82,15 @@ const router = createBrowserRouter([
           { path: "/import-share", element: <ImportSharePage /> },
           // Tribe
           { path: "/tribe", element: <TribePage /> },
+          { path: ROUTES.studyMatch, element: <StudyMatchHomePage /> },
+          { path: ROUTES.studyMatchStart, element: <StudyMatchStartPage /> },
+          { path: "/study-match/results/:id", element: <StudyMatchResultsPage /> },
+          { path: ROUTES.studyMatchCountries, element: <StudyMatchCountriesPage /> },
+          { path: ROUTES.studyMatchCourses, element: <StudyMatchCoursesPage /> },
+          { path: ROUTES.studyMatchUniversities, element: <StudyMatchUniversitiesPage /> },
+          { path: ROUTES.studyMatchCities, element: <StudyMatchCitiesPage /> },
+          { path: ROUTES.studyMatchSaved, element: <StudyMatchSavedPage /> },
+          { path: ROUTES.studyMatchChecklist, element: <StudyMatchChecklistPage /> },
           { path: "/communities/:id", element: <CommunityDetailPage /> },
           // Career Tools hub + tools
           { path: "/career-tools", element: <CareerToolsPage /> },
@@ -74,6 +100,7 @@ const router = createBrowserRouter([
           { path: "/plan/interview-prep", element: <InterviewPrepPage /> },
           { path: "/jobs/:id", element: <JobDetailPage /> },
           { path: "/posts/:id", element: <PostDetailPage /> },
+          { path: "/@:username", element: <UsernameProfilePage /> },
           { path: "/profile/:id/followers", element: <FollowListPage mode="followers" /> },
           { path: "/profile/:id/following", element: <FollowListPage mode="following" /> },
           { path: ROUTES.profile(), element: <ProfilePage /> },

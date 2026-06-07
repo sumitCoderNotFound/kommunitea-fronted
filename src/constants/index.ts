@@ -7,12 +7,25 @@ export const ROUTES = {
   landing: "/",
   login: "/login",
   register: "/register",
+  forgotPassword: "/forgot-password",
+  resetPassword: "/reset-password",
+  verifyEmail: "/verify-email",
+  chooseUsername: "/choose-username",
   onboarding: "/onboarding",
 
   // ---- Primary sections (Kommunitea naming) ----
   home: "/feed", // Home  (was Feed)
   feed: "/feed", // kept for back-compat with existing links
   tribe: "/tribe", // Tribe (Explore / Communities) — page built in Step 2
+  studyMatch: "/study-match",
+  studyMatchStart: "/study-match/start",
+  studyMatchResult: (id: string | number = ":id") => `/study-match/results/${id}`,
+  studyMatchCountries: "/study-match/countries",
+  studyMatchCourses: "/study-match/courses",
+  studyMatchUniversities: "/study-match/universities",
+  studyMatchCities: "/study-match/cities",
+  studyMatchSaved: "/study-match/saved",
+  studyMatchChecklist: "/study-match/checklist",
   communityDetail: (id: string | number = ":id") => `/communities/${id}`,
   plan: "/plan", // Plan (was Scheduler)
   planSponsorship: "/plan/sponsorship-jobs",
