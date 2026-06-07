@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, MessageCircle, Bookmark, Share2, Send, MoreHorizontal, Flag, Ban } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Share2, Send, MoreHorizontal, Flag, Ban, Repeat2 } from "lucide-react";
 import type { Post } from "@/types";
 import { Card } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
@@ -15,6 +15,9 @@ import { useToast } from "@/hooks/useToast";
 import { useAuthStore } from "@/store/authStore";
 import { EmojiPicker } from "@/components/ui/EmojiPicker";
 import { moderationService } from "@/services/moderationService";
+import { postService } from "@/services/postService";
+import { RepostModal } from "@/features/posts/RepostModal";
+import { ShareModal } from "@/features/posts/ShareModal";
 
 interface PostCardProps {
   post: Post;
@@ -31,6 +34,12 @@ export function PostCard({ post, onLike, onSave }: PostCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [localComments, setLocalComments] = useState(post.comments ?? []);
+  // Reshare + share state
+  const [reshared, setReshared] = useState(post.isReshared ?? false);
+  const [reshares, setReshares] = useState(post.resharesCount ?? 0);
+  const [repostOpen, setRepostOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [reshareBusy, setReshareBusy] = useState(false);
   const category = CATEGORIES.find((c) => c.value === post.category);
   const comment = useComment();
   const toast = useToast();
@@ -44,12 +53,29 @@ export function PostCard({ post, onLike, onSave }: PostCardProps) {
     onLike?.(post.id);
   };
 
-  const handleShare = async () => {
-    const url = `${window.location.origin}/feed?post=${post.id}`;
+  const doRepost = async (commentTextValue?: string) => {
+    setReshareBusy(true);
     try {
-      if (navigator.share) await navigator.share({ title: "Kommunitea", url });
-      else { await navigator.clipboard.writeText(url); toast.success("Link copied to clipboard 🔗"); }
-    } catch { /* user cancelled */ }
+      const updated = await postService.reshare(post.id, commentTextValue);
+      setReshared(true);
+      setReshares(updated.resharesCount ?? reshares + 1);
+      toast.success(commentTextValue ? "Reposted with your comment" : "Reposted to your feed");
+      setRepostOpen(false);
+    } catch (e) {
+      toast.error("Couldn't repost: " + (e as Error).message);
+    } finally { setReshareBusy(false); }
+  };
+  const doUndoRepost = async () => {
+    setReshareBusy(true);
+    try {
+      const updated = await postService.unreshare(post.id);
+      setReshared(false);
+      setReshares(updated.resharesCount ?? Math.max(0, reshares - 1));
+      toast.success("Repost removed");
+      setRepostOpen(false);
+    } catch (e) {
+      toast.error("Couldn't undo: " + (e as Error).message);
+    } finally { setReshareBusy(false); }
   };
 
   const submitComment = () => {
@@ -79,6 +105,16 @@ export function PostCard({ post, onLike, onSave }: PostCardProps) {
   return (
     <motion.div whileHover={{ y: -4 }} transition={snappy}>
       <Card className="p-5 transition-shadow hover:shadow-card">
+        {post.resharedBy?.names?.length ? (
+          <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-ink-muted">
+            <Repeat2 className="h-3.5 w-3.5" />
+            {post.resharedBy.names.slice(0, 2).join(", ")}
+            {post.resharedBy.names.length > 2 ? ` +${post.resharedBy.names.length - 2}` : ""} reposted
+          </p>
+        ) : null}
+        {post.resharedBy?.comment ? (
+          <p className="mb-3 rounded-lg bg-sand px-3 py-2 text-sm text-ink-soft">“{post.resharedBy.comment}”</p>
+        ) : null}
         <div className="flex items-center gap-3">
           <Link to={ROUTES.profile(post.author.id)}>
             <Avatar name={post.author.fullName} src={post.author.avatarUrl} />
@@ -90,7 +126,9 @@ export function PostCard({ post, onLike, onSave }: PostCardProps) {
               </Link>
               {post.author.badge && <VerifiedBadge type={post.author.badge} />}
             </div>
-            <p className="truncate text-xs text-ink-muted">{post.author.university} · {timeAgo(post.createdAt)}</p>
+            <p className="truncate text-xs text-ink-muted">
+              {post.author.university} · <Link to={ROUTES.postDetail(post.id)} className="hover:underline">{timeAgo(post.createdAt)}</Link>
+            </p>
           </div>
           {category && <span className="rounded-full bg-sand px-2.5 py-1 text-xs font-medium text-ink-soft">{category.label}</span>}
           {!isMine && (
@@ -138,7 +176,11 @@ export function PostCard({ post, onLike, onSave }: PostCardProps) {
             className={cn("flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-colors hover:bg-ink/5", showComments ? "text-coral" : "text-ink-muted")}>
             <MessageCircle className="h-[18px] w-[18px]" /> {compactNumber(post.commentsCount + (localComments.length - (post.comments?.length ?? 0)))}
           </motion.button>
-          <motion.button whileTap={{ scale: 0.85 }} onClick={handleShare}
+          <motion.button whileTap={{ scale: 0.85 }} onClick={() => setRepostOpen(true)}
+            className={cn("flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-colors hover:bg-ink/5", reshared ? "text-emerald-600" : "text-ink-muted")}>
+            <Repeat2 className="h-[18px] w-[18px]" /> {reshares > 0 ? compactNumber(reshares) : ""}
+          </motion.button>
+          <motion.button whileTap={{ scale: 0.85 }} onClick={() => setShareOpen(true)}
             className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-ink-muted transition-colors hover:bg-ink/5">
             <Share2 className="h-[18px] w-[18px]" /> Share
           </motion.button>
@@ -180,6 +222,10 @@ export function PostCard({ post, onLike, onSave }: PostCardProps) {
           )}
         </AnimatePresence>
       </Card>
+
+      <RepostModal open={repostOpen} onClose={() => setRepostOpen(false)}
+        isReshared={reshared} busy={reshareBusy} onRepost={doRepost} onUndo={doUndoRepost} />
+      <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} post={post} />
     </motion.div>
   );
 }

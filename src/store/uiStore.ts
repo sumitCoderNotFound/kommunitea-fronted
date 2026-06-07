@@ -20,11 +20,14 @@ interface UIState {
   toasts: Toast[];
   isSidebarOpen: boolean;
   isCreatePostOpen: boolean;
+  isImportOpen: boolean;
+  importInitial: string;
   confirm: ConfirmState;
   pushToast: (type: Toast["type"], message: string) => void;
   dismissToast: (id: string) => void;
   toggleSidebar: () => void;
   setCreatePostOpen: (open: boolean) => void;
+  setImportOpen: (open: boolean, initial?: string) => void;
   requestConfirm: (opts: Partial<Omit<ConfirmState, "open">> & { onConfirm: () => void }) => void;
   closeConfirm: () => void;
 }
@@ -40,6 +43,8 @@ export const useUIStore = create<UIState>((set, get) => ({
   toasts: [],
   isSidebarOpen: false,
   isCreatePostOpen: false,
+  isImportOpen: false,
+  importInitial: "",
   confirm: defaultConfirm,
   pushToast: (type, message) => {
     const id = crypto.randomUUID();
@@ -52,6 +57,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
   toggleSidebar: () => set((s) => ({ isSidebarOpen: !s.isSidebarOpen })),
   setCreatePostOpen: (open) => set({ isCreatePostOpen: open }),
+  setImportOpen: (open, initial = "") => set({ isImportOpen: open, importInitial: open ? initial : "" }),
   requestConfirm: (opts) =>
     set({ confirm: { ...defaultConfirm, ...opts, open: true } }),
   closeConfirm: () => set({ confirm: { ...defaultConfirm } }),

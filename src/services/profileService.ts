@@ -49,4 +49,19 @@ export const profileService = {
   },
   async follow(id: string) { const { data } = await apiClient.post(`/profiles/${id}/follow/`); return data; },
   async unfollow(id: string) { await apiClient.post(`/profiles/${id}/unfollow/`); },
+  async followers(id: string, search = "") {
+    const { data } = await apiClient.get<import("@/types").User[]>(`/profiles/${id}/followers/`, { params: search ? { search } : {} });
+    return data;
+  },
+  async following(id: string, search = "") {
+    const { data } = await apiClient.get<import("@/types").User[]>(`/profiles/${id}/following/`, { params: search ? { search } : {} });
+    return data;
+  },
+  async achievements() {
+    const { data } = await apiClient.get<{
+      achievements: { key: string; title: string; icon: string; desc: string; earned: boolean; progress: number; target: number }[];
+      earnedCount: number; total: number;
+    }>("/profiles/me/achievements/");
+    return data;
+  },
 };

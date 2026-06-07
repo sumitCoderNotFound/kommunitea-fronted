@@ -1,8 +1,9 @@
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Inbox, Plus } from "lucide-react";
+import { Inbox, Plus, Link2 } from "lucide-react";
 import { PostCard } from "@/features/posts/PostCard";
 import { RightRail } from "@/features/feed/RightRail";
+import { ForYouRecommendations } from "@/features/feed/ForYouRecommendations";
 import { StoriesBar } from "@/features/stories/StoriesBar";
 import { Card } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
@@ -14,7 +15,7 @@ import { cn } from "@/utils/cn";
 import { listStagger, popIn, springy } from "@/utils/motion";
 import { useAuthStore } from "@/store/authStore";
 import { useUIStore } from "@/store/uiStore";
-import { usePosts, useToggleLike, useToggleSave } from "@/hooks/usePosts";
+import { useFeed, useToggleLike, useToggleSave } from "@/hooks/usePosts";
 import type { PostCategory } from "@/types";
 
 export function FeedPage() {
@@ -22,11 +23,13 @@ export function FeedPage() {
   const activeCategory = (params.get("category") as PostCategory) || undefined;
   const { user } = useAuthStore();
   const setCreatePostOpen = useUIStore((s) => s.setCreatePostOpen);
+  const setImportOpen = useUIStore((s) => s.setImportOpen);
 
-  const { data, isLoading } = usePosts({ category: activeCategory });
+  const { data: allPosts, isLoading } = useFeed();
   const like = useToggleLike();
   const save = useToggleSave();
-  const posts = data?.results ?? [];
+  // Category filtering happens client-side so reshare attribution stays intact.
+  const posts = (allPosts ?? []).filter((p) => !activeCategory || p.category === activeCategory);
 
   return (
     <div className="flex gap-6">
@@ -46,8 +49,14 @@ export function FeedPage() {
                 <Plus className="h-4 w-4" /> Post
               </Button>
             </motion.div>
+            <button onClick={() => setImportOpen(true)} aria-label="Import from link" title="Import from link"
+              className="rounded-xl border border-sand-border p-2.5 text-ink-soft transition-colors hover:border-coral hover:text-coral">
+              <Link2 className="h-4 w-4" />
+            </button>
           </Card>
         </motion.div>
+
+        {!activeCategory && <ForYouRecommendations />}
 
         <div className="flex flex-wrap gap-2">
           <Chip active={!activeCategory} onClick={() => setParams({})}>All</Chip>

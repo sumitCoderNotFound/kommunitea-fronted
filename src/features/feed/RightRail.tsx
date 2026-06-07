@@ -1,25 +1,17 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { UserPlus, TrendingUp, Bell, Gift, GraduationCap, Users, CalendarDays } from "lucide-react";
+import { UserPlus, TrendingUp, Bell, CalendarDays } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import { ActivityGrid } from "@/features/profile/ActivityGrid";
 import { StreakBadge } from "@/features/profile/StreakBadge";
 import { useStreak } from "@/hooks/useStreak";
 import { profileService } from "@/services/profileService";
+import { schedulerService } from "@/services/schedulerService";
 import { useAuthStore } from "@/store/authStore";
 import { ROUTES } from "@/constants";
 import { springy } from "@/utils/motion";
-
-// Illustrative community events (no events backend yet — these are samples to
-// show the section; wire to a real Events model when you build one).
-const EVENTS = [
-  { icon: GraduationCap, color: "text-coral", title: "Graduation Season", date: "Jul 15, 2026" },
-  { icon: Users, color: "text-emerald-500", title: "London Networking Meetup", date: "Jul 22, 2026" },
-  { icon: CalendarDays, color: "text-sky", title: "CV Workshop (online)", date: "Aug 03, 2026" },
-  { icon: Gift, color: "text-amber-500", title: "Community 1st Birthday", date: "Sep 01, 2026" },
-];
 
 export function RightRail() {
   const { activity, currentStreak, longestStreak } = useStreak();
@@ -28,6 +20,11 @@ export function RightRail() {
   const suggestions = (data?.results ?? [])
     .filter((u) => String(u.id) !== String(me?.id) && !u.isFollowing && !u.hasRequested)
     .slice(0, 5);
+  // Real community events from the scheduler's opportunities feed.
+  const { data: events = [] } = useQuery({
+    queryKey: ["rail-events"],
+    queryFn: () => schedulerService.opportunities("event"),
+  });
 
   return (
     <aside className="hidden w-[300px] shrink-0 space-y-4 xl:block">
@@ -87,26 +84,30 @@ export function RightRail() {
         </Card>
       </motion.div>
 
-      {/* Upcoming Events (SlothUI-style) */}
-      <motion.div initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ ...springy, delay: 0.12 }}>
-        <Card className="p-5">
-          <h3 className="mb-3 font-display font-semibold">Upcoming Events</h3>
-          <div className="space-y-3">
-            {EVENTS.map((e) => (
-              <div key={e.title} className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sand">
-                  <e.icon className={`h-4 w-4 ${e.color}`} />
+      {/* Upcoming Events — real community events */}
+      {events.length > 0 && (
+        <motion.div initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ ...springy, delay: 0.12 }}>
+          <Card className="p-5">
+            <h3 className="mb-3 font-display font-semibold">Upcoming Events</h3>
+            <div className="space-y-3">
+              {events.slice(0, 5).map((e) => (
+                <div key={e.id} className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sand">
+                    <CalendarDays className="h-4 w-4 text-coral" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{e.title}</p>
+                    <p className="text-xs text-ink-muted">
+                      {[e.org || e.location, e.deadline ? new Date(e.deadline).toLocaleDateString() : null].filter(Boolean).join(" · ")}
+                    </p>
+                  </div>
+                  <Bell className="h-4 w-4 text-ink-muted" />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{e.title}</p>
-                  <p className="text-xs text-ink-muted">{e.date}</p>
-                </div>
-                <Bell className="h-4 w-4 text-ink-muted" />
-              </div>
-            ))}
-          </div>
-        </Card>
-      </motion.div>
+              ))}
+            </div>
+          </Card>
+        </motion.div>
+      )}
     </aside>
   );
 }

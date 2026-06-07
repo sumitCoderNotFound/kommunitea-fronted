@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Bell, Plus, LogOut, Menu, Mail, Sun, Moon } from "lucide-react";
+import { Bell, Plus, LogOut, Menu, Mail, Sun, Moon, Link2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { notificationService } from "@/services/notificationService";
 import { messageService } from "@/services/messageService";
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/Button";
 
 export function Navbar() {
   const { user, logout } = useAuthStore();
-  const { setCreatePostOpen, toggleSidebar } = useUIStore();
+  const { setCreatePostOpen, setImportOpen, toggleSidebar } = useUIStore();
   const navigate = useNavigate();
   const { theme, toggle } = useTheme();
   const { data: unread = 0 } = useQuery({
@@ -48,6 +48,9 @@ export function Navbar() {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
+          <button onClick={() => setImportOpen(true)} className="hidden rounded-xl p-2 hover:bg-ink/5 sm:inline-flex" aria-label="Import from link" title="Import from link">
+            <Link2 className="h-5 w-5 text-ink-soft" />
+          </button>
           <Button size="sm" onClick={() => setCreatePostOpen(true)} className="hidden sm:inline-flex">
             <Plus className="h-4 w-4" /> Post
           </Button>

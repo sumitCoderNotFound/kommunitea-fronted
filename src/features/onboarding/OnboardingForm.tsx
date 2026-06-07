@@ -13,6 +13,7 @@ import { MultiCombobox } from "@/components/ui/MultiCombobox";
 import {
   UK_CITIES, UK_UNIVERSITIES, USER_TYPE_OPTIONS, MONTHS, STUDY_LEVELS,
   INDUSTRIES, EXPERIENCE_OPTIONS, INTAKE_YEARS, INTEREST_OPTIONS, BRINGS_YOU_OPTIONS,
+  EXPERIENCE_LEVELS, JOB_TYPES, CONTENT_NICHES, NEWCOMER_NEEDS,
 } from "@/constants/options";
 import { ROUTES } from "@/constants";
 import { profileService } from "@/services/profileService";
@@ -52,6 +53,9 @@ export function OnboardingForm() {
         university: "", course: "", studyLevel: "", gradMonth: "", gradYear: "", studentEmail: "",
         company: "", jobTitle: "", yearsExperience: "", industry: "", hiringFor: "",
         displayCompany: true, openToNetworking: true, openToReferrals: false,
+        targetRole: "", experienceLevel: "", jobType: "",
+        contentNiche: "", instagram: "", youtube: "", tiktok: "", creatorTopics: [],
+        destinationCity: "", arrivalMonth: "", arrivalYear: "", newcomerNeeds: [],
         whyJoined: "", interests: [], skills: [], lookingFor: [],
       },
     });
@@ -61,12 +65,17 @@ export function OnboardingForm() {
   const isGraduate = userType === "graduate";
   const isPro = userType === "professional";
   const isRecruiter = userType === "recruiter";
+  const isJobSeeker = userType === "job_seeker";
+  const isCreator = userType === "creator";
+  const isNewcomer = userType === "newcomer";
   const showEducation = isStudent || isGraduate;
   const showWork = isPro || isRecruiter;
 
   const stepFields: (keyof OnboardingValues)[][] = [
     ["fullName", "userType", "city"],
-    ["university", "course", "studyLevel", "company", "jobTitle", "yearsExperience", "industry", "hiringFor"],
+    ["university", "course", "studyLevel", "company", "jobTitle", "yearsExperience", "industry", "hiringFor",
+     "targetRole", "experienceLevel", "jobType", "contentNiche", "instagram", "youtube", "tiktok",
+     "destinationCity", "arrivalMonth", "arrivalYear"],
     ["whyJoined", "interests", "skills", "lookingFor"],
   ];
 
@@ -79,6 +88,7 @@ export function OnboardingForm() {
     try {
       if (avatar) await profileService.uploadAvatar(avatar);
       const gradDate = [v.gradMonth, v.gradYear].filter(Boolean).join(" ");
+      const arrivalDate = [v.arrivalMonth, v.arrivalYear].filter(Boolean).join(" ");
       const updated = await profileService.completeOnboarding({
         fullName: v.fullName,
         userType: v.userType,
@@ -97,6 +107,20 @@ export function OnboardingForm() {
         displayCompany: v.displayCompany,
         openToNetworking: v.openToNetworking,
         openToReferrals: v.openToReferrals,
+        // Job seeker
+        targetRole: v.targetRole,
+        experienceLevel: v.experienceLevel,
+        jobType: v.jobType,
+        // Creator
+        contentNiche: v.contentNiche,
+        instagram: v.instagram,
+        youtube: v.youtube,
+        tiktok: v.tiktok,
+        creatorTopics: v.creatorTopics,
+        // Newcomer
+        destinationCity: v.destinationCity,
+        arrivalDate,
+        newcomerNeeds: v.newcomerNeeds,
         bio: v.whyJoined,
         interests: v.interests,
         skills: v.skills,
@@ -193,6 +217,43 @@ export function OnboardingForm() {
                     </label>
                   )} />
                 )}
+              </>
+            )}
+
+            {isJobSeeker && (
+              <>
+                <Input label="Target role *" placeholder="e.g. Data Analyst, Graduate Software Engineer" error={errors.targetRole?.message} {...register("targetRole")} />
+                <CB control={control} name="experienceLevel" label="Experience level" options={EXPERIENCE_LEVELS} placeholder="Select level" error={errors.experienceLevel?.message} />
+                <CB control={control} name="jobType" label="Preferred job type" options={JOB_TYPES} placeholder="Select type" error={errors.jobType?.message} />
+                <CB control={control} name="industry" label="Industry" options={INDUSTRIES} allowOther placeholder="Select industry" error={errors.industry?.message} />
+              </>
+            )}
+
+            {isCreator && (
+              <>
+                <CB control={control} name="contentNiche" label="Content niche *" options={CONTENT_NICHES} allowOther placeholder="Select your niche" error={errors.contentNiche?.message} />
+                <Input label="Instagram (optional)" placeholder="https://instagram.com/yourhandle" error={errors.instagram?.message} {...register("instagram")} />
+                <Input label="YouTube (optional)" placeholder="https://youtube.com/@yourchannel" error={errors.youtube?.message} {...register("youtube")} />
+                <Input label="TikTok (optional)" placeholder="https://tiktok.com/@yourhandle" error={errors.tiktok?.message} {...register("tiktok")} />
+                <Controller control={control} name="creatorTopics" render={({ field }) => (
+                  <MultiCombobox label="Topics you create about" values={field.value} onChange={field.onChange} options={INTEREST_OPTIONS} allowCustom placeholder="Add topics..." />
+                )} />
+              </>
+            )}
+
+            {isNewcomer && (
+              <>
+                <CB control={control} name="destinationCity" label="UK city you're moving to *" options={UK_CITIES} allowOther placeholder="Select your destination city" error={errors.destinationCity?.message} />
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-ink-soft">When do you arrive?</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <CB control={control} name="arrivalMonth" label="" options={MONTHS} placeholder="Month" />
+                    <CB control={control} name="arrivalYear" label="" options={INTAKE_YEARS} placeholder="Year" />
+                  </div>
+                </div>
+                <Controller control={control} name="newcomerNeeds" render={({ field }) => (
+                  <MultiCombobox label="What do you need help with?" values={field.value} onChange={field.onChange} options={NEWCOMER_NEEDS} allowCustom placeholder="Select what you need..." />
+                )} />
               </>
             )}
           </>

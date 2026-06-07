@@ -8,19 +8,42 @@ export const ROUTES = {
   login: "/login",
   register: "/register",
   onboarding: "/onboarding",
-  feed: "/feed",
-  profile: (id = ":id") => `/profile/${id}`,
+
+  // ---- Primary sections (Kommunitea naming) ----
+  home: "/feed", // Home  (was Feed)
+  feed: "/feed", // kept for back-compat with existing links
+  tribe: "/tribe", // Tribe (Explore / Communities) — page built in Step 2
+  communityDetail: (id: string | number = ":id") => `/communities/${id}`,
+  plan: "/plan", // Plan (was Scheduler)
+  planSponsorship: "/plan/sponsorship-jobs",
+  planCv: "/plan/cv-review",
+  planReferrals: "/plan/referrals",
+  planInterview: "/plan/interview-prep",
+  careerTools: "/career-tools",
+  jobDetail: (id: string | number = ":id") => `/jobs/${id}`,
+  inbox: "/inbox", // Inbox (was Messages)
+  inboxThread: (id: string = ":conversationId") => `/inbox/${id}`,
+  me: (id: string = ":id") => `/profile/${id}`, // Me
+  profile: (id: string = ":id") => `/profile/${id}`,
+  followers: (id: string = ":id") => `/profile/${id}/followers`,
+  following: (id: string = ":id") => `/profile/${id}/following`,
+  postDetail: (id: string = ":id") => `/posts/${id}`,
+
+  // ---- Secondary / inside sections ----
   editProfile: "/settings/profile",
   myPosts: "/my-posts",
   settings: "/settings",
   notifications: "/notifications",
-  messages: "/messages",
-  aiTools: "/ai-tools",
+
+  // ---- Back-compat aliases (old paths still resolve) ----
+  messages: "/inbox",
+  scheduler: "/plan",
+
+  // ---- Legal ----
   privacy: "/privacy",
   terms: "/terms",
   guidelines: "/community-guidelines",
   contact: "/contact",
-  scheduler: "/scheduler",
 } as const;
 
 export const LOOKING_FOR_OPTIONS: { value: LookingFor; label: string }[] = [

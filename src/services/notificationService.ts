@@ -3,10 +3,20 @@ import { apiClient } from "./apiClient";
 export interface AppNotification {
   id: string;
   actor: { id: string; fullName: string; avatarUrl?: string };
-  verb: "like" | "comment" | "follow" | "request" | "message";
+  verb: string;
   verbDisplay: string;
   text: string;
   postId: number | null;
+  conversationId?: string;
+  targetType?: string;
+  targetId?: string;
+  storyId?: string;
+  userId?: string;
+  jobId?: string;
+  communityId?: string;
+  reshareId?: string;
+  eventId?: string;
+  referralId?: string;
   isRead: boolean;
   createdAt: string;
 }

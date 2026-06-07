@@ -1,3 +1,4 @@
+import { lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AppLayout } from "@/layouts/AppLayout";
 import { AuthLayout } from "@/layouts/AuthLayout";
@@ -8,19 +9,31 @@ import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
 import { OnboardingPage } from "@/pages/OnboardingPage";
 import { FeedPage } from "@/pages/FeedPage";
-import { ProfilePage } from "@/pages/ProfilePage";
+import { ImportSharePage } from "@/pages/ImportSharePage";
+import { TribePage } from "@/pages/TribePage";
+import { CareerToolsPage } from "@/pages/CareerToolsPage";
+import { PostDetailPage } from "@/pages/PostDetailPage";
+import { JobDetailPage } from "@/pages/JobDetailPage";
+import { FollowListPage } from "@/pages/FollowListPage";
 import { EditProfilePage } from "@/pages/EditProfilePage";
 import { MyPostsPage } from "@/pages/MyPostsPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { NotificationsPage } from "@/pages/NotificationsPage";
-import { MessagesPage } from "@/pages/MessagesPage";
-import { AIToolsPage } from "@/pages/AIToolsPage";
 import { SchedulerPage } from "@/pages/SchedulerPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { PrivacyPage } from "@/pages/legal/PrivacyPage";
 import { TermsPage } from "@/pages/legal/TermsPage";
 import { GuidelinesPage } from "@/pages/legal/GuidelinesPage";
 import { ContactPage } from "@/pages/legal/ContactPage";
+
+// Heavy pages are code-split (lazy) to shrink the initial bundle.
+const CommunityDetailPage = lazy(() => import("@/pages/CommunityDetailPage").then((m) => ({ default: m.CommunityDetailPage })));
+const SponsorshipJobFinderPage = lazy(() => import("@/pages/SponsorshipJobFinderPage").then((m) => ({ default: m.SponsorshipJobFinderPage })));
+const CVReviewPage = lazy(() => import("@/pages/CVReviewPage").then((m) => ({ default: m.CVReviewPage })));
+const ReferralTrackerPage = lazy(() => import("@/pages/ReferralTrackerPage").then((m) => ({ default: m.ReferralTrackerPage })));
+const InterviewPrepPage = lazy(() => import("@/pages/InterviewPrepPage").then((m) => ({ default: m.InterviewPrepPage })));
+const MessagesPage = lazy(() => import("@/pages/MessagesPage").then((m) => ({ default: m.MessagesPage })));
+const ProfilePage = lazy(() => import("@/pages/ProfilePage").then((m) => ({ default: m.ProfilePage })));
 
 const router = createBrowserRouter([
   { path: ROUTES.landing, element: <LandingPage /> },
@@ -49,14 +62,32 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           { path: ROUTES.feed, element: <FeedPage /> },
+          { path: "/import-share", element: <ImportSharePage /> },
+          // Tribe
+          { path: "/tribe", element: <TribePage /> },
+          { path: "/communities/:id", element: <CommunityDetailPage /> },
+          // Career Tools hub + tools
+          { path: "/career-tools", element: <CareerToolsPage /> },
+          { path: "/plan/sponsorship-jobs", element: <SponsorshipJobFinderPage /> },
+          { path: "/plan/cv-review", element: <CVReviewPage /> },
+          { path: "/plan/referrals", element: <ReferralTrackerPage /> },
+          { path: "/plan/interview-prep", element: <InterviewPrepPage /> },
+          { path: "/jobs/:id", element: <JobDetailPage /> },
+          { path: "/posts/:id", element: <PostDetailPage /> },
+          { path: "/profile/:id/followers", element: <FollowListPage mode="followers" /> },
+          { path: "/profile/:id/following", element: <FollowListPage mode="following" /> },
           { path: ROUTES.profile(), element: <ProfilePage /> },
           { path: ROUTES.editProfile, element: <EditProfilePage /> },
           { path: ROUTES.myPosts, element: <MyPostsPage /> },
           { path: ROUTES.settings, element: <SettingsPage /> },
           { path: ROUTES.notifications, element: <NotificationsPage /> },
-          { path: ROUTES.messages, element: <MessagesPage /> },
-          { path: ROUTES.aiTools, element: <AIToolsPage /> },
-          { path: ROUTES.scheduler, element: <SchedulerPage /> },
+          // Inbox (new canonical) + /messages back-compat + thread route
+          { path: "/inbox", element: <MessagesPage /> },
+          { path: "/inbox/:conversationId", element: <MessagesPage /> },
+          { path: "/messages", element: <MessagesPage /> },
+          // Plan (new canonical) + /scheduler back-compat
+          { path: "/plan", element: <SchedulerPage /> },
+          { path: "/scheduler", element: <SchedulerPage /> },
         ],
       },
     ],

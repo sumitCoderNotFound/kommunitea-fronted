@@ -71,8 +71,25 @@ export const INTAKE_YEARS = Array.from({ length: 14 }, (_, i) =>
 export const USER_TYPE_OPTIONS = [
   { value: "student", label: "Student" },
   { value: "graduate", label: "Graduate" },
-  { value: "professional", label: "Working Professional" },
+  { value: "professional", label: "Professional" },
+  { value: "job_seeker", label: "Job Seeker" },
   { value: "recruiter", label: "Recruiter" },
+  { value: "creator", label: "Creator" },
+  { value: "newcomer", label: "New to UK" },
+];
+
+export const EXPERIENCE_LEVELS = ["Entry level", "Junior", "Mid level", "Senior", "Lead / Manager"];
+
+export const JOB_TYPES = ["Full-time", "Part-time", "Internship", "Contract", "Graduate scheme"];
+
+export const CONTENT_NICHES = [
+  "Student life", "Career & jobs", "Tech", "Finance", "Lifestyle", "Travel",
+  "Education", "Fitness", "Food", "Fashion", "Comedy", "Other",
+];
+
+export const NEWCOMER_NEEDS = [
+  "Accommodation", "Bank account", "SIM / mobile", "Visa / BRP help",
+  "National Insurance number", "GP / healthcare", "Making friends", "Finding a job", "Getting around",
 ];
 
 export const MONTHS = [

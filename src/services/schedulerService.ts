@@ -1,4 +1,5 @@
 import { apiClient } from "./apiClient";
+import type { JobApplication } from "@/types";
 
 export type TaskCategory =
   | "interview" | "job_deadline" | "accommodation" | "visa" | "university"
@@ -89,6 +90,23 @@ export const schedulerService = {
   async overview() {
     const { data } = await apiClient.get<Overview>("/scheduler/overview/");
     return data;
+  },
+
+  // ---- Application tracker (shared with mobile; /scheduler/applications/) ----
+  async applications() {
+    const { data } = await apiClient.get<Paginated<JobApplication>>("/scheduler/applications/");
+    return rows(data);
+  },
+  async createApplication(payload: Partial<JobApplication>) {
+    const { data } = await apiClient.post<JobApplication>("/scheduler/applications/", payload);
+    return data;
+  },
+  async updateApplication(id: string, payload: Partial<JobApplication>) {
+    const { data } = await apiClient.patch<JobApplication>(`/scheduler/applications/${id}/`, payload);
+    return data;
+  },
+  async deleteApplication(id: string) {
+    await apiClient.delete(`/scheduler/applications/${id}/`);
   },
 };
 

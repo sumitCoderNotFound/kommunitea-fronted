@@ -1,18 +1,25 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Flame, Target, AlertTriangle, Lightbulb, Plus, Check, Clock,
   CalendarClock, Briefcase, Sparkles, MapPin, Trash2, ChevronLeft, ChevronRight,
+  BadgeCheck, FileText, Users, MessageCircleQuestion, ClipboardList,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { DateTimePicker } from "@/components/ui/DateTimePicker";
+import { Select } from "@/components/ui/Select";
+import { CareerToolCard } from "@/features/plan/CareerToolCard";
+import { ApplicationStatusBadge, APPLICATION_STATUS_OPTIONS } from "@/features/plan/ApplicationStatusBadge";
+import { ROUTES } from "@/constants";
 import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/hooks/useToast";
 import {
   schedulerService, suggestCategory, CATEGORY_META,
   type Task, type TaskCategory,
 } from "@/services/schedulerService";
+import type { ApplicationStatus } from "@/types";
 
 const ALL_CATEGORIES = Object.keys(CATEGORY_META) as TaskCategory[];
 
@@ -108,6 +115,38 @@ export function SchedulerPage() {
           {" · "}<span className="font-semibold text-ink">{stats?.opportunitiesExpiring ?? 0} opportunities</span> expiring this week
         </p>
       </motion.div>
+
+      {/* CAREER TOOLS */}
+      <section>
+        <h2 className="mb-3 flex items-center gap-2 font-display text-lg font-semibold">
+          <Sparkles className="h-4 w-4 text-coral" /> Career Tools
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <CareerToolCard to={ROUTES.planSponsorship} icon={BadgeCheck} title="Sponsorship Job Finder"
+            description="Find roles from visa-sponsoring employers." accent="bg-emerald-500/10 text-emerald-600" />
+          <CareerToolCard to={ROUTES.planCv} icon={FileText} title="CV ATS Review"
+            description="Score your CV against applicant-tracking systems." accent="bg-sky-500/10 text-sky-500" />
+          <CareerToolCard to={ROUTES.planReferrals} icon={Users} title="Referral Tracker"
+            description="Track who you've asked for referrals." accent="bg-violet-500/10 text-violet-500" />
+          <CareerToolCard to={ROUTES.planInterview} icon={MessageCircleQuestion} title="Interview Prep"
+            description="Checklists and common questions per interview." accent="bg-amber-500/10 text-amber-600" />
+          <button onClick={() => document.getElementById("applications")?.scrollIntoView({ behavior: "smooth" })}
+            className="text-left">
+            <Card className="group flex h-full items-start gap-4 p-5 transition-shadow hover:shadow-soft">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-coral/10 text-coral">
+                <ClipboardList className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="font-semibold text-ink">Application Tracker</p>
+                <p className="mt-0.5 text-sm text-ink-muted">See every saved & applied job below.</p>
+              </div>
+            </Card>
+          </button>
+        </div>
+      </section>
+
+      {/* APPLICATION TRACKER (reuses scheduler/applications) */}
+      <ApplicationsTracker />
 
       <div className="grid gap-5 lg:grid-cols-[200px_1fr_300px]">
         {/* LEFT: calendar + filters + categories */}
@@ -444,5 +483,62 @@ function Consistency({ days, streak, thisMonth }: { days: { date: string; count:
         Less <span className="h-2.5 w-2.5 rounded-sm bg-sand-border" /><span className="h-2.5 w-2.5 rounded-sm bg-emerald-500/40" /><span className="h-2.5 w-2.5 rounded-sm bg-emerald-500/70" /><span className="h-2.5 w-2.5 rounded-sm bg-emerald-500" /> More
       </div>
     </Card>
+  );
+}
+
+/* Application tracker — reads/writes the shared /scheduler/applications endpoint. */
+function ApplicationsTracker() {
+  const qc = useQueryClient();
+  const toast = useToast();
+  const { data, isLoading } = useQuery({ queryKey: ["applications"], queryFn: schedulerService.applications });
+  const apps = data ?? [];
+
+  const update = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: ApplicationStatus }) =>
+      schedulerService.updateApplication(id, { status }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["applications"] }),
+    onError: (e) => toast.error("Couldn't update: " + (e as Error).message),
+  });
+  const remove = useMutation({
+    mutationFn: (id: string) => schedulerService.deleteApplication(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["applications"] }),
+  });
+
+  return (
+    <section id="applications">
+      <h2 className="mb-3 flex items-center gap-2 font-display text-lg font-semibold">
+        <ClipboardList className="h-4 w-4 text-coral" /> Application Tracker
+      </h2>
+      {isLoading ? (
+        <Card className="p-6 text-center text-sm text-ink-muted">Loading applications…</Card>
+      ) : apps.length === 0 ? (
+        <Card className="p-6 text-center text-sm text-ink-muted">
+          No applications yet. Use the Sponsorship Job Finder to Save or Apply — they'll appear here.
+        </Card>
+      ) : (
+        <Card className="divide-y divide-sand-border p-0">
+          {apps.map((a) => (
+            <div key={a.id} className="flex flex-wrap items-center gap-3 p-3">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">{a.roleTitle || "Role"} <span className="font-normal text-ink-muted">@ {a.company}</span></p>
+                {a.jobLink && <a href={a.jobLink} target="_blank" rel="noreferrer" className="text-xs text-coral hover:underline">View posting</a>}
+                {a.status === "interview" && (
+                  <Link to={`${ROUTES.planInterview}?company=${encodeURIComponent(a.company || "")}&role=${encodeURIComponent(a.roleTitle || "")}`}
+                    className="mt-0.5 flex items-center gap-1 text-xs font-medium text-violet-600 hover:underline">
+                    <Target className="h-3 w-3" /> Interview stage — prep for it →
+                  </Link>
+                )}
+              </div>
+              <ApplicationStatusBadge status={a.status} />
+              <Select className="h-9 w-auto" options={APPLICATION_STATUS_OPTIONS} value={a.status}
+                onChange={(e) => update.mutate({ id: a.id, status: e.target.value as ApplicationStatus })} />
+              <button onClick={() => remove.mutate(a.id)} className="rounded-lg p-2 text-ink-muted hover:bg-ink/5 hover:text-rose-500" aria-label="Remove">
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+        </Card>
+      )}
+    </section>
   );
 }

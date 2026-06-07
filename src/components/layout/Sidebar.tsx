@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, User, FileText, Bell, Mail, Settings, Compass, X, Sparkles, CalendarClock } from "lucide-react";
+import { Home, User, FileText, Bell, Mail, Settings, Compass, X, Sparkles, CalendarClock, Users } from "lucide-react";
 import { ROUTES, CATEGORIES, APP_NAME } from "@/constants";
 import { useAuthStore } from "@/store/authStore";
 import { useUIStore } from "@/store/uiStore";
@@ -9,13 +9,19 @@ import { useStreak } from "@/hooks/useStreak";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/utils/cn";
 
-const nav = [
-  { to: ROUTES.feed, label: "Community Feed", icon: Home },
-  { to: ROUTES.myPosts, label: "My Posts", icon: FileText },
-  { to: ROUTES.aiTools, label: "AI Tools", icon: Sparkles },
-  { to: ROUTES.scheduler, label: "Scheduler", icon: CalendarClock },
-  { to: ROUTES.messages, label: "Messages", icon: Mail },
+// Primary Kommunitea sections. (Tribe arrives in Step 2 once its page exists,
+// so it is intentionally not listed yet — no dead links.)
+const primaryNav = [
+  { to: ROUTES.home, label: "Home", icon: Home },
+  { to: ROUTES.tribe, label: "Tribe", icon: Users },
+  { to: ROUTES.plan, label: "Plan", icon: CalendarClock },
+  { to: ROUTES.inbox, label: "Inbox", icon: Mail },
+];
+
+const secondaryNav = [
   { to: ROUTES.notifications, label: "Notifications", icon: Bell },
+  { to: ROUTES.myPosts, label: "My Posts", icon: FileText },
+  { to: ROUTES.careerTools, label: "Career Tools", icon: Sparkles },
   { to: ROUTES.settings, label: "Settings", icon: Settings },
 ];
 
@@ -29,16 +35,28 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <nav className="space-y-1">
+      {/* Me */}
       {user && (
-        <NavLink to={ROUTES.profile(user.id)} onClick={onNavigate} className={linkClass}>
-          <User className="h-5 w-5" /> My Profile
+        <NavLink to={ROUTES.me(user.id)} onClick={onNavigate} className={linkClass}>
+          <User className="h-5 w-5" /> Me
         </NavLink>
       )}
-      {nav.map(({ to, label, icon: Icon }) => (
-        <NavLink key={to} to={to} onClick={onNavigate} className={linkClass}>
+
+      {/* Primary sections */}
+      {primaryNav.map(({ to, label, icon: Icon }) => (
+        <NavLink key={to} to={to} onClick={onNavigate} className={linkClass} end={to === ROUTES.home}>
           <Icon className="h-5 w-5" /> {label}
         </NavLink>
       ))}
+
+      {/* Secondary sections */}
+      <div className="pt-4">
+        {secondaryNav.map(({ to, label, icon: Icon }) => (
+          <NavLink key={to} to={to} onClick={onNavigate} className={linkClass}>
+            <Icon className="h-5 w-5" /> {label}
+          </NavLink>
+        ))}
+      </div>
 
       <div className="pt-5">
         <p className="flex items-center gap-2 px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
@@ -46,7 +64,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         </p>
         <div className="space-y-0.5">
           {CATEGORIES.map((c) => (
-            <NavLink key={c.value} to={`${ROUTES.feed}?category=${c.value}`} onClick={onNavigate}
+            <NavLink key={c.value} to={`${ROUTES.home}?category=${c.value}`} onClick={onNavigate}
               className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-ink-soft hover:bg-ink/5">
               {c.label}
             </NavLink>
