@@ -186,7 +186,15 @@ export const catalogService = {
     const d = await apiClient.get<{ cities: CityInsight[] }>("/study-match/catalog/city-insights/", { params: { search: slug } });
     return d.data.cities.find((c) => c.slug === slug) || null;
   },
+  async jobInsights(params: Record<string, string> = {}) {
+    return (await apiClient.get<{ jobs: ExternalJob[]; count: number; lastUpdated: string | null; attribution: string; disclaimer: string }>("/study-match/catalog/job-insights/", { params })).data;
+  },
 };
+
+export interface ExternalJob {
+  id: number; title: string; company: string; city: string; salaryMin: number | null;
+  salaryMax: number | null; jobType: string; category: string; source: string; applyUrl: string; lastCheckedAt: string | null;
+}
 
 export interface CityInsight {
   id: number; city: string; slug: string; region: string; country: string;

@@ -4,7 +4,7 @@ import { MapPin, Wallet, Building2, Briefcase, Users, Home, Bookmark, CalendarPl
 import { Button } from "@/components/ui/Button";
 import { ROUTES } from "@/constants";
 import { useToast } from "@/hooks/useToast";
-import { catalogService, studyMatchService, CityInsight } from "@/services/studyMatchService";
+import { catalogService, studyMatchService, CityInsight, ExternalJob } from "@/services/studyMatchService";
 
 function Section({ icon: Icon, title, children }: { icon: typeof Wallet; title: string; children: ReactNode }) {
   return (
@@ -20,9 +20,20 @@ export function CityDetailPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const [c, setC] = useState<CityInsight | null>(null);
+  const [jobs, setJobs] = useState<ExternalJob[]>([]);
+  const [jobsMeta, setJobsMeta] = useState<{ attribution: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { if (slug) catalogService.city(slug).then(setC).catch(() => setC(null)).finally(() => setLoading(false)); }, [slug]);
+  useEffect(() => {
+    if (!slug) return;
+    catalogService.city(slug)
+      .then((city) => {
+        setC(city);
+        if (city) catalogService.jobInsights({ city: city.city }).then((d) => { setJobs(d.jobs); setJobsMeta({ attribution: d.attribution }); }).catch(() => {});
+      })
+      .catch(() => setC(null))
+      .finally(() => setLoading(false));
+  }, [slug]);
   if (loading) return <div className="py-20 text-center text-ink-muted">Loading…</div>;
   if (!c) return <div className="py-20 text-center text-ink-muted">City not found.</div>;
 
@@ -82,6 +93,17 @@ export function CityDetailPage() {
       <Section icon={Briefcase} title="Jobs & career">
         <p>Part-time jobs: <span className="font-medium text-ink">{c.partTimeJobSignal}</span> · Graduate market: <span className="font-medium text-ink">{c.graduateJobMarketSignal}</span></p>
         {c.mainIndustries.length > 0 && <p className="mt-1">Main industries: {c.mainIndustries.join(", ")}</p>}
+        {jobs.length > 0 && (
+          <div className="mt-3 space-y-2">
+            <p className="text-xs font-medium text-ink">Latest roles{jobsMeta ? ` · ${jobsMeta.attribution}` : ""}</p>
+            {jobs.slice(0, 5).map((j) => (
+              <a key={j.id} href={j.applyUrl} target="_blank" rel="noreferrer" className="block rounded-lg border border-sand-border px-3 py-2 hover:bg-ink/5">
+                <p className="text-sm font-medium text-ink">{j.title}</p>
+                <p className="text-xs text-ink-muted">{[j.company, j.salaryMin && j.salaryMax ? `£${j.salaryMin.toLocaleString()}–£${j.salaryMax.toLocaleString()} (indicative)` : null, j.jobType].filter(Boolean).join(" · ")}</p>
+              </a>
+            ))}
+          </div>
+        )}
         <p className="mt-1 text-xs">Job market signal is indicative and does not guarantee employment.</p>
       </Section>
 
