@@ -176,7 +176,19 @@ export const catalogService = {
   async feeBands() {
     return (await apiClient.get<{ bands: FeeBand[]; source: string; sourceUrl: string; disclaimer: string }>("/study-match/catalog/fee-bands/")).data;
   },
+  async countryInsights() {
+    return (await apiClient.get<{ countries: CountryInsight[]; lastUpdated: string | null; disclaimer: string }>("/study-match/catalog/countries/")).data;
+  },
 };
+
+export interface CountryInsight {
+  id: number; country: string; name: string;
+  studyScore: number; workScore: number; budgetScore: number; visaScore: number;
+  languageScore: number; rankingScore: number; studentLifeScore: number; overallScore: number;
+  bestForSubjects: string[]; popularCities: string[]; tuitionBand: string; livingCostBand: string;
+  postStudyWorkSummary: string; partTimeWorkSummary: string; languageNotes: string; riskNotes: string;
+  weeklyUpdateSummary: string; sourceName: string; sourceUrl: string; lastCheckedAt: string | null; updateFrequency: string;
+}
 
 /** Honest fee display: exact verified fee, else indicative band, else check-official. */
 export function courseFeeDisplay(c: CatalogCourse): { mode: "verified" | "indicative" | "unknown"; text: string; band?: FeeBand } {

@@ -19,7 +19,7 @@ import { TribePage } from "@/pages/TribePage";
 import { StudyMatchHomePage } from "@/pages/study/StudyMatchHomePage";
 import { StudyMatchStartPage } from "@/pages/study/StudyMatchStartPage";
 import { StudyMatchResultsPage } from "@/pages/study/StudyMatchResultsPage";
-import { StudyMatchCountriesPage } from "@/pages/study/StudyMatchCountriesPage";
+import { CountryInsightsPage } from "@/pages/study/CountryInsightsPage";
 import { CatalogUniversitiesPage } from "@/pages/study/CatalogUniversitiesPage";
 import { UniversityDetailPage, CatalogCoursesPage, CourseDetailPage } from "@/pages/study/CatalogDetailPages";
 import { MatchWizardPage } from "@/pages/study/MatchWizardPage";
@@ -87,7 +87,7 @@ const router = createBrowserRouter([
           { path: ROUTES.studyMatch, element: <StudyMatchHomePage /> },
           { path: ROUTES.studyMatchStart, element: <StudyMatchStartPage /> },
           { path: "/study-match/results/:id", element: <StudyMatchResultsPage /> },
-          { path: ROUTES.studyMatchCountries, element: <StudyMatchCountriesPage /> },
+          { path: ROUTES.studyMatchCountries, element: <CountryInsightsPage /> },
           { path: ROUTES.studyMatchCourses, element: <CatalogCoursesPage /> },
           { path: "/study-match/course/:id", element: <CourseDetailPage /> },
           { path: ROUTES.studyMatchUniversities, element: <CatalogUniversitiesPage /> },
