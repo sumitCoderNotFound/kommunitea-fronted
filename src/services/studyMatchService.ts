@@ -179,7 +179,25 @@ export const catalogService = {
   async countryInsights() {
     return (await apiClient.get<{ countries: CountryInsight[]; lastUpdated: string | null; disclaimer: string }>("/study-match/catalog/countries/")).data;
   },
+  async cityInsights(params: Record<string, string> = {}) {
+    return (await apiClient.get<{ cities: CityInsight[]; lastUpdated: string | null; disclaimer: string }>("/study-match/catalog/city-insights/", { params })).data;
+  },
+  async city(slug: string) {
+    const d = await apiClient.get<{ cities: CityInsight[] }>("/study-match/catalog/city-insights/", { params: { search: slug } });
+    return d.data.cities.find((c) => c.slug === slug) || null;
+  },
 };
+
+export interface CityInsight {
+  id: number; city: string; slug: string; region: string; country: string;
+  costLevel: string; rentLevel: string; monthlyLivingCostBand: string; averageRentBand: string;
+  partTimeJobSignal: string; graduateJobMarketSignal: string; safetySignal: string;
+  studentLifeSignal: string; internationalCommunitySignal: string; accommodationDifficulty: string;
+  mainIndustries: string[]; bestForSubjects: string[]; bestForCareerAreas: string[]; topUniversities: string[];
+  relatedCommunities: string[]; citySummary: string; whyChooseThisCity: string; whatToBeCarefulAbout: string;
+  overallCityScore: number; sourceName: string; sourceUrl: string; lastCheckedAt: string | null;
+  dataConfidence: string; scoreBreakdown?: Record<string, number>;
+}
 
 export interface CountryInsight {
   id: number; country: string; name: string;

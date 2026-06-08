@@ -20,11 +20,13 @@ import { StudyMatchHomePage } from "@/pages/study/StudyMatchHomePage";
 import { StudyMatchStartPage } from "@/pages/study/StudyMatchStartPage";
 import { StudyMatchResultsPage } from "@/pages/study/StudyMatchResultsPage";
 import { CountryInsightsPage } from "@/pages/study/CountryInsightsPage";
+import { CityGuidePage } from "@/pages/study/CityGuidePage";
+import { CityDetailPage } from "@/pages/study/CityDetailPage";
 import { CatalogUniversitiesPage } from "@/pages/study/CatalogUniversitiesPage";
 import { UniversityDetailPage, CatalogCoursesPage, CourseDetailPage } from "@/pages/study/CatalogDetailPages";
 import { MatchWizardPage } from "@/pages/study/MatchWizardPage";
 import {
-  StudyMatchCitiesPage, StudyMatchSavedPage, StudyMatchChecklistPage,
+  StudyMatchSavedPage, StudyMatchChecklistPage,
 } from "@/pages/study/StudyMatchMiscPages";
 import { CareerToolsPage } from "@/pages/CareerToolsPage";
 import { PostDetailPage } from "@/pages/PostDetailPage";
@@ -93,7 +95,8 @@ const router = createBrowserRouter([
           { path: ROUTES.studyMatchUniversities, element: <CatalogUniversitiesPage /> },
           { path: "/study-match/universities/:id", element: <UniversityDetailPage /> },
           { path: ROUTES.studyMatchWizard, element: <MatchWizardPage /> },
-          { path: ROUTES.studyMatchCities, element: <StudyMatchCitiesPage /> },
+          { path: ROUTES.studyMatchCities, element: <CityGuidePage /> },
+          { path: "/study-match/cities/:slug", element: <CityDetailPage /> },
           { path: ROUTES.studyMatchSaved, element: <StudyMatchSavedPage /> },
           { path: ROUTES.studyMatchChecklist, element: <StudyMatchChecklistPage /> },
           { path: "/communities/:id", element: <CommunityDetailPage /> },
