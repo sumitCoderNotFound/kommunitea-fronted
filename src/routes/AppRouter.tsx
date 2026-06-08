@@ -20,9 +20,11 @@ import { StudyMatchHomePage } from "@/pages/study/StudyMatchHomePage";
 import { StudyMatchStartPage } from "@/pages/study/StudyMatchStartPage";
 import { StudyMatchResultsPage } from "@/pages/study/StudyMatchResultsPage";
 import { StudyMatchCountriesPage } from "@/pages/study/StudyMatchCountriesPage";
+import { CatalogUniversitiesPage } from "@/pages/study/CatalogUniversitiesPage";
+import { UniversityDetailPage, CatalogCoursesPage, CourseDetailPage } from "@/pages/study/CatalogDetailPages";
+import { MatchWizardPage } from "@/pages/study/MatchWizardPage";
 import {
-  StudyMatchCitiesPage, StudyMatchCoursesPage, StudyMatchSavedPage,
-  StudyMatchChecklistPage, StudyMatchUniversitiesPage,
+  StudyMatchCitiesPage, StudyMatchSavedPage, StudyMatchChecklistPage,
 } from "@/pages/study/StudyMatchMiscPages";
 import { CareerToolsPage } from "@/pages/CareerToolsPage";
 import { PostDetailPage } from "@/pages/PostDetailPage";
@@ -86,8 +88,11 @@ const router = createBrowserRouter([
           { path: ROUTES.studyMatchStart, element: <StudyMatchStartPage /> },
           { path: "/study-match/results/:id", element: <StudyMatchResultsPage /> },
           { path: ROUTES.studyMatchCountries, element: <StudyMatchCountriesPage /> },
-          { path: ROUTES.studyMatchCourses, element: <StudyMatchCoursesPage /> },
-          { path: ROUTES.studyMatchUniversities, element: <StudyMatchUniversitiesPage /> },
+          { path: ROUTES.studyMatchCourses, element: <CatalogCoursesPage /> },
+          { path: "/study-match/course/:id", element: <CourseDetailPage /> },
+          { path: ROUTES.studyMatchUniversities, element: <CatalogUniversitiesPage /> },
+          { path: "/study-match/universities/:id", element: <UniversityDetailPage /> },
+          { path: ROUTES.studyMatchWizard, element: <MatchWizardPage /> },
           { path: ROUTES.studyMatchCities, element: <StudyMatchCitiesPage /> },
           { path: ROUTES.studyMatchSaved, element: <StudyMatchSavedPage /> },
           { path: ROUTES.studyMatchChecklist, element: <StudyMatchChecklistPage /> },

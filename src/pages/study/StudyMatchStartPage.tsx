@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { Combobox } from "@/components/ui/Combobox";
+import { MultiCombobox } from "@/components/ui/MultiCombobox";
 import { ROUTES } from "@/constants";
 import { useToast } from "@/hooks/useToast";
-import { studyMatchService, StudyProfile, PRIORITY_OPTIONS } from "@/services/studyMatchService";
+import { studyMatchService, StudyProfile, PRIORITY_OPTIONS, SM_OPTIONS } from "@/services/studyMatchService";
 
-const COUNTRIES = ["UK", "Canada", "Germany", "Australia", "Ireland", "USA", "New Zealand"];
-const STEPS = ["About you", "Study goal", "Budget", "English & docs", "Priorities", "Result"];
+const STEPS = ["About you", "Study goal", "Budget", "English & docs", "Priorities"];
 
 function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
@@ -19,19 +19,41 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   );
 }
 
+function YesNo({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <div className="flex items-center justify-between rounded-xl border border-sand-border bg-sand-card px-4 py-3">
+      <span className="text-sm text-ink">{label}</span>
+      <div className="flex gap-1">
+        <button type="button" onClick={() => onChange(true)} className={`rounded-lg px-3 py-1 text-sm ${value ? "bg-coral text-white" : "text-ink-muted hover:bg-ink/5"}`}>Yes</button>
+        <button type="button" onClick={() => onChange(false)} className={`rounded-lg px-3 py-1 text-sm ${!value ? "bg-coral text-white" : "text-ink-muted hover:bg-ink/5"}`}>No</button>
+      </div>
+    </div>
+  );
+}
+
 export function StudyMatchStartPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const [step, setStep] = useState(0);
   const [busy, setBusy] = useState(false);
   const [p, setP] = useState<StudyProfile>({ preferredCountries: [], priorities: [] });
+  const [documents, setDocuments] = useState<string[]>([]);
+  const [resume, setResume] = useState<{ hasProfile: boolean; latestId?: number } | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const [profile, results] = await Promise.all([studyMatchService.getProfile(), studyMatchService.results()]);
+        const hasProfile = !!profile && Object.values(profile).some((v) => (Array.isArray(v) ? v.length : v));
+        if (hasProfile || results.length) {
+          setResume({ hasProfile, latestId: results[0]?.id });
+          if (hasProfile) setP({ preferredCountries: [], priorities: [], ...profile });
+        }
+      } catch { /* no profile yet */ }
+    })();
+  }, []);
 
   const set = (patch: Partial<StudyProfile>) => setP((prev) => ({ ...prev, ...patch }));
-  const toggle = (key: "preferredCountries" | "priorities", val: string) =>
-    setP((prev) => {
-      const arr = prev[key] || [];
-      return { ...prev, [key]: arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val] };
-    });
 
   const saveLater = async () => {
     try { await studyMatchService.saveProfile(p); toast.success("Saved — you can continue later."); }
@@ -41,19 +63,34 @@ export function StudyMatchStartPage() {
   const generate = async () => {
     setBusy(true);
     try {
-      const result = await studyMatchService.generate(p);
+      const payload: StudyProfile = { ...p, documentStatus: documents.length > 0 && !documents.includes("Not ready yet") };
+      const result = await studyMatchService.generate(payload);
       navigate(ROUTES.studyMatchResult(result.id), { replace: true });
-    } catch {
-      toast.error("Couldn't generate your match. Please try again.");
-      setBusy(false);
-    }
+    } catch { toast.error("Couldn't generate your match. Please try again."); setBusy(false); }
   };
 
   const next = () => (step === 4 ? generate() : setStep((s) => Math.min(5, s + 1)));
+  const scoreOptions = SM_OPTIONS.scoreByTest[p.englishTestType || ""] || ["Not sure"];
 
   return (
     <div className="mx-auto max-w-2xl">
-      {/* Progress */}
+      {resume && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-sand-card p-6 shadow-soft">
+            <h2 className="font-display text-xl font-bold text-ink">You already have a Study Match</h2>
+            <p className="mt-1 text-sm text-ink-muted">Pick up where you left off, or start fresh.</p>
+            <div className="mt-5 space-y-2">
+              {resume.hasProfile && <Button fullWidth onClick={() => setResume(null)}>Continue saved answers</Button>}
+              {resume.latestId && <Button fullWidth variant="secondary" onClick={() => navigate(ROUTES.studyMatchResult(resume.latestId!))}>View latest result</Button>}
+              <Button fullWidth variant="ghost" onClick={() => { setP({ preferredCountries: [], priorities: [] }); setDocuments([]); setStep(0); setResume(null); }}>
+                Start new Study Match
+              </Button>
+            </div>
+            <p className="mt-3 text-xs text-ink-muted">Starting new keeps your previous results in history.</p>
+          </div>
+        </div>
+      )}
+
       <div className="mb-6">
         <div className="mb-2 flex items-center justify-between text-sm">
           <span className="font-medium text-ink">{STEPS[step]}</span>
@@ -67,12 +104,12 @@ export function StudyMatchStartPage() {
       <div className="rounded-2xl border border-sand-border bg-sand-card p-6">
         {step === 0 && (
           <div className="space-y-4">
-            <p className="text-sm text-ink-muted">Tell us a bit about you. Skip anything you're unsure about.</p>
-            <Input label="Current country" placeholder="e.g. India" value={p.currentCountry || ""} onChange={(e) => set({ currentCountry: e.target.value })} />
-            <Input label="Current education level" placeholder="e.g. Bachelor's" value={p.educationLevel || ""} onChange={(e) => set({ educationLevel: e.target.value })} />
-            <Input label="Current qualification" placeholder="e.g. BTech Computer Science" value={p.currentQualification || ""} onChange={(e) => set({ currentQualification: e.target.value })} />
-            <Input label="Marks / CGPA (optional)" placeholder="e.g. 8.2 CGPA" value={p.marksOrCgpa || ""} onChange={(e) => set({ marksOrCgpa: e.target.value })} />
-            <Input label="Work experience (optional)" placeholder="e.g. 1 year" value={p.workExperience || ""} onChange={(e) => set({ workExperience: e.target.value })} />
+            <p className="text-sm text-ink-muted">Tell us a bit about you — just pick from the lists.</p>
+            <Combobox label="Current country" value={p.currentCountry || ""} onChange={(v) => set({ currentCountry: v })} options={SM_OPTIONS.currentCountry} allowOther placeholder="Select country" />
+            <Combobox label="Current education level" value={p.educationLevel || ""} onChange={(v) => set({ educationLevel: v })} options={SM_OPTIONS.educationLevel} placeholder="Select level" />
+            <Combobox label="Current qualification" value={p.currentQualification || ""} onChange={(v) => set({ currentQualification: v })} options={SM_OPTIONS.qualification} allowOther placeholder="Select qualification" />
+            <Combobox label="Marks / CGPA" value={p.marksOrCgpa || ""} onChange={(v) => set({ marksOrCgpa: v })} options={SM_OPTIONS.marks} placeholder="Select range" />
+            <Combobox label="Work experience" value={p.workExperience || ""} onChange={(v) => set({ workExperience: v })} options={SM_OPTIONS.workExperience} placeholder="Select" />
           </div>
         )}
 
@@ -81,35 +118,22 @@ export function StudyMatchStartPage() {
             <div>
               <label className="mb-1.5 block text-sm font-medium text-ink">Desired study level</label>
               <div className="flex flex-wrap gap-2">
-                {["Undergraduate", "Masters", "PhD", "Diploma"].map((l) => (
-                  <Chip key={l} active={p.desiredStudyLevel === l} onClick={() => set({ desiredStudyLevel: l })}>{l}</Chip>
-                ))}
+                {SM_OPTIONS.studyLevel.map((l) => <Chip key={l} active={p.desiredStudyLevel === l} onClick={() => set({ desiredStudyLevel: l })}>{l}</Chip>)}
               </div>
             </div>
-            <Input label="Subject interest" placeholder="e.g. Computer Science" value={p.subjectInterest || ""} onChange={(e) => set({ subjectInterest: e.target.value })} />
-            <Input label="Career goal" placeholder="e.g. Software Engineer" value={p.careerGoal || ""} onChange={(e) => set({ careerGoal: e.target.value })} />
-            <Input label="Preferred intake (optional)" placeholder="e.g. Sep 2026" value={p.preferredIntake || ""} onChange={(e) => set({ preferredIntake: e.target.value })} />
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-ink">Preferred countries (optional)</label>
-              <div className="flex flex-wrap gap-2">
-                {COUNTRIES.map((c) => (
-                  <Chip key={c} active={(p.preferredCountries || []).includes(c)} onClick={() => toggle("preferredCountries", c)}>{c}</Chip>
-                ))}
-              </div>
-            </div>
+            <Combobox label="Subject interest" value={p.subjectInterest || ""} onChange={(v) => set({ subjectInterest: v })} options={SM_OPTIONS.subject} allowOther placeholder="Select subject" />
+            <Combobox label="Career goal" value={p.careerGoal || ""} onChange={(v) => set({ careerGoal: v })} options={SM_OPTIONS.careerGoal} allowOther placeholder="Select career goal" />
+            <Combobox label="Preferred intake" value={p.preferredIntake || ""} onChange={(v) => set({ preferredIntake: v })} options={SM_OPTIONS.intake} placeholder="Select intake" />
+            <MultiCombobox label="Preferred countries" values={p.preferredCountries || []} onChange={(v) => set({ preferredCountries: v })} options={SM_OPTIONS.countries} placeholder="Search countries" />
           </div>
         )}
 
         {step === 2 && (
           <div className="space-y-4">
-            <Input label="Tuition budget (optional)" placeholder="e.g. £15,000/year" value={p.tuitionBudget || ""} onChange={(e) => set({ tuitionBudget: e.target.value })} />
-            <Input label="Living cost budget (optional)" placeholder="e.g. £900/month" value={p.livingBudget || ""} onChange={(e) => set({ livingBudget: e.target.value })} />
-            <label className="flex items-center gap-2 text-sm text-ink">
-              <input type="checkbox" checked={!!p.needsScholarship} onChange={(e) => set({ needsScholarship: e.target.checked })} /> I need a scholarship
-            </label>
-            <label className="flex items-center gap-2 text-sm text-ink">
-              <input type="checkbox" checked={!!p.needsPartTimeWork} onChange={(e) => set({ needsPartTimeWork: e.target.checked })} /> I want part-time work
-            </label>
+            <Combobox label="Tuition budget" value={p.tuitionBudget || ""} onChange={(v) => set({ tuitionBudget: v })} options={SM_OPTIONS.tuitionBudget} placeholder="Select tuition budget" />
+            <Combobox label="Living cost budget" value={p.livingBudget || ""} onChange={(v) => set({ livingBudget: v })} options={SM_OPTIONS.livingBudget} placeholder="Select living budget" />
+            <YesNo label="I need a scholarship" value={!!p.needsScholarship} onChange={(v) => set({ needsScholarship: v })} />
+            <YesNo label="I want part-time work" value={!!p.needsPartTimeWork} onChange={(v) => set({ needsPartTimeWork: v })} />
           </div>
         )}
 
@@ -118,18 +142,14 @@ export function StudyMatchStartPage() {
             <div>
               <label className="mb-1.5 block text-sm font-medium text-ink">English test</label>
               <div className="flex flex-wrap gap-2">
-                {["IELTS", "PTE", "TOEFL", "Not taken yet"].map((t) => (
-                  <Chip key={t} active={p.englishTestType === t} onClick={() => set({ englishTestType: t })}>{t}</Chip>
-                ))}
+                {SM_OPTIONS.englishTest.map((t) => <Chip key={t} active={p.englishTestType === t} onClick={() => set({ englishTestType: t, englishTestScore: "" })}>{t}</Chip>)}
               </div>
             </div>
-            <Input label="Score if available (optional)" placeholder="e.g. 7.0" value={p.englishTestScore || ""} onChange={(e) => set({ englishTestScore: e.target.value })} />
-            <label className="flex items-center gap-2 text-sm text-ink">
-              <input type="checkbox" checked={!!p.passportStatus} onChange={(e) => set({ passportStatus: e.target.checked })} /> I have a passport
-            </label>
-            <label className="flex items-center gap-2 text-sm text-ink">
-              <input type="checkbox" checked={!!p.documentStatus} onChange={(e) => set({ documentStatus: e.target.checked })} /> My documents are ready
-            </label>
+            {["IELTS", "PTE", "TOEFL", "Duolingo"].includes(p.englishTestType || "") && (
+              <Combobox label="Score" value={p.englishTestScore || ""} onChange={(v) => set({ englishTestScore: v })} options={scoreOptions} placeholder="Select score" />
+            )}
+            <YesNo label="I have a passport" value={!!p.passportStatus} onChange={(v) => set({ passportStatus: v })} />
+            <MultiCombobox label="Documents ready" values={documents} onChange={setDocuments} options={SM_OPTIONS.documents} placeholder="Add documents you have" />
           </div>
         )}
 
@@ -138,13 +158,15 @@ export function StudyMatchStartPage() {
             <p className="mb-3 text-sm text-ink-muted">What matters most to you? Pick any that apply.</p>
             <div className="flex flex-wrap gap-2">
               {PRIORITY_OPTIONS.map((o) => (
-                <Chip key={o.key} active={(p.priorities || []).includes(o.key)} onClick={() => toggle("priorities", o.key)}>{o.label}</Chip>
+                <Chip key={o.key} active={(p.priorities || []).includes(o.key)}
+                  onClick={() => set({ priorities: (p.priorities || []).includes(o.key) ? (p.priorities || []).filter((x) => x !== o.key) : [...(p.priorities || []), o.key] })}>
+                  {o.label}
+                </Chip>
               ))}
             </div>
           </div>
         )}
 
-        {/* Nav */}
         <div className="mt-8 flex items-center justify-between">
           <button onClick={() => (step === 0 ? navigate(ROUTES.studyMatch) : setStep((s) => s - 1))}
             className="inline-flex items-center gap-1 text-sm font-medium text-ink-muted hover:text-ink">

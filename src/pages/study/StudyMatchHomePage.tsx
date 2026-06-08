@@ -40,6 +40,10 @@ export function StudyMatchHomePage() {
             onClick={() => navigate(ROUTES.studyMatchStart)}>
             Start Study Match <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
+          <Button size="lg" variant="ghost" className="!text-white !border !border-white/40 hover:!bg-white/10"
+            onClick={() => navigate(ROUTES.studyMatchWizard)}>
+            Find my match
+          </Button>
           {hasResults && (
             <Button size="lg" variant="ghost" className="!text-white !border !border-white/40 hover:!bg-white/10"
               onClick={() => navigate(ROUTES.studyMatchResult(results![0].id))}>
@@ -75,6 +79,25 @@ export function StudyMatchHomePage() {
       <p className="mt-6 rounded-xl border border-sand-border bg-sand px-4 py-3 text-xs text-ink-muted">
         Study Match provides guidance to help you research options. It does not guarantee admission, visa approval, scholarships or jobs.
       </p>
+
+      {hasResults && (
+        <div className="mt-8">
+          <h2 className="mb-3 font-display text-lg font-bold text-ink">Previous results</h2>
+          <div className="space-y-2">
+            {results!.slice(0, 6).map((r, i) => (
+              <button key={r.id} onClick={() => navigate(ROUTES.studyMatchResult(r.id))}
+                className="flex w-full items-center gap-3 rounded-2xl border border-sand-border bg-sand-card p-4 text-left hover:border-coral/40">
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-coral/10 text-coral"><GraduationCap className="h-4 w-4" /></span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-ink">{r.overallSummary}</p>
+                  <p className="text-xs text-ink-muted">{i === 0 ? "Latest · " : ""}{new Date(r.createdAt).toLocaleDateString()}</p>
+                </div>
+                <ArrowRight className="h-4 w-4 shrink-0 text-ink-muted" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

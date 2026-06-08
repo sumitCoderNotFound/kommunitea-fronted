@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { MapPin, BookOpen, Bookmark, ShieldCheck, Building2, Trash2, ExternalLink } from "lucide-react";
+import { MapPin, BookOpen, Bookmark, ShieldCheck, Trash2, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ROUTES } from "@/constants";
 import { useToast } from "@/hooks/useToast";
@@ -124,25 +124,4 @@ export function StudyMatchChecklistPage() {
   )} />;
 }
 
-export function StudyMatchUniversitiesPage() {
-  const toast = useToast();
-  return <LatestResultGate icon={Building2} title="University shortlist" render={(r) => (
-    <div className="mt-5 space-y-3">
-      {r.universityRecommendations.map((u) => (
-        <div key={u.university} className="flex flex-col gap-2 rounded-2xl border border-sand-border bg-sand-card p-4 sm:flex-row sm:items-center">
-          <div className="min-w-0 flex-1">
-            <h3 className="font-medium text-ink">{u.university}</h3>
-            <p className="text-sm text-ink-muted">{u.course} · {u.city}</p>
-          </div>
-          <div className="flex shrink-0 gap-2">
-            <a href={u.officialUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-sand-border px-2.5 py-1.5 text-xs hover:bg-ink/5"><ExternalLink className="h-3.5 w-3.5" /> Official</a>
-            <Button size="sm" variant="ghost" onClick={async () => { try { await studyMatchService.save({ optionType: "university", title: u.university, university: u.university, city: u.city, course: u.course, officialUrl: u.officialUrl, status: "shortlisted" }); toast.success("Saved."); } catch { toast.error("Couldn't save."); } }}>
-              <Bookmark className="mr-1 h-3.5 w-3.5" /> Save
-            </Button>
-          </div>
-        </div>
-      ))}
-      <p className="mt-2 text-xs text-ink-muted">{r.disclaimers?.university}</p>
-    </div>
-  )} />;
-}
+

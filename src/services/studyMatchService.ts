@@ -36,8 +36,13 @@ export interface CourseRec {
   recommendedCities: string[]; communities: string[];
 }
 export interface UniversityRec {
-  university: string; course: string; city: string; feeRange: string;
-  entrySummary: string; officialUrl: string; whyItFits: string;
+  university: string; course: string; city: string; country: string;
+  studyLevel: string; duration: string; intake: string; feeRange: string;
+  entrySummary: string; englishRequirement: string; officialUrl: string;
+  matchScore: number; cityCostLevel: string; partTimeOpportunity: string;
+  careerMarketSignal: string; accommodationDifficulty: string; communitySignal: string;
+  whyItFits: string; whatToCheck: string; sourceName: string; sourceUrl: string;
+  lastCheckedAt?: string | null;
 }
 export interface CityRec {
   city: string; score: number; costLevel: string; studentLife: string;
@@ -63,8 +68,9 @@ export interface StudyResult {
 export interface SavedOption {
   id: number; optionType: string; title: string; subtitle?: string;
   country?: string; city?: string; university?: string; course?: string;
-  fee?: string; intake?: string; officialUrl?: string; notes?: string;
-  status: string; deadline?: string | null;
+  fee?: string; intake?: string; entryRequirements?: string; englishRequirement?: string;
+  officialUrl?: string; notes?: string; status: string; deadline?: string | null;
+  matchScore?: number | null; sourceName?: string; sourceUrl?: string;
 }
 
 export const studyMatchService = {
@@ -73,6 +79,7 @@ export const studyMatchService = {
   async generate(p?: StudyProfile) { return (await apiClient.post<StudyResult>("/study-match/generate/", p || {})).data; },
   async results() { return (await apiClient.get<StudyResult[]>("/study-match/results/")).data; },
   async result(id: string | number) { return (await apiClient.get<StudyResult>(`/study-match/results/${id}/`)).data; },
+  async universities() { return (await apiClient.get<{ universities: UniversityRec[]; disclaimer: string }>("/study-match/universities/")).data; },
   async countries() { return (await apiClient.get<{ countries: Record<string, never>; disclaimers: Record<string, string> }>("/study-match/countries/")).data; },
   async cities() { return (await apiClient.get<{ cities: Record<string, never>; disclaimers: Record<string, string> }>("/study-match/cities/")).data; },
   async courses() { return (await apiClient.get<{ courses: Record<string, never>; disclaimers: Record<string, string> }>("/study-match/courses/")).data; },
@@ -98,4 +105,75 @@ export const PRIORITY_OPTIONS = [
   { key: "scholarship_chances", label: "Scholarship chances" },
   { key: "community", label: "Indian/student community" },
   { key: "tech_ecosystem", label: "Tech/career ecosystem" },
+  { key: "safe_accommodation", label: "Safe accommodation" },
+  { key: "lower_visa_risk", label: "Lower visa risk" },
 ];
+
+// Dropdown option lists (searchable). Keep these the single source of truth.
+export const SM_OPTIONS = {
+  currentCountry: ["India", "Nepal", "Bangladesh", "Pakistan", "Sri Lanka", "Nigeria", "Ghana", "Kenya", "UAE", "Saudi Arabia", "United Kingdom", "Other"],
+  educationLevel: ["12th / Higher Secondary", "Diploma", "Bachelor's", "Master's", "Working professional", "Other"],
+  qualification: ["BTech Computer Science", "BSc Computer Science", "BCA", "BCom", "BBA", "BA", "BSc Nursing", "BSc Chemistry", "BSc Biology", "BPharm", "MBBS", "Engineering", "Business / Management", "Healthcare", "Other"],
+  marks: ["50–59%", "60–69%", "70–79%", "80%+", "CGPA 6–6.9", "CGPA 7–7.9", "CGPA 8+", "Not sure"],
+  workExperience: ["No experience", "Less than 1 year", "1–2 years", "2–4 years", "4+ years"],
+  studyLevel: ["Undergraduate", "Masters", "PhD", "Diploma / Certificate"],
+  subject: ["Computer Science", "Data Science", "Artificial Intelligence", "Cyber Security", "Business Analytics", "Project Management", "Public Health", "Healthcare Management", "Engineering", "Finance", "Marketing", "Supply Chain", "Hospitality", "Nursing / Healthcare", "Psychology", "Education", "Other"],
+  careerGoal: ["Software Engineer", "Data Analyst", "Data Scientist", "AI/ML Engineer", "Cyber Security Analyst", "Business Analyst", "Project Manager", "Healthcare Manager", "Public Health Officer", "Finance Analyst", "Marketing Executive", "Supply Chain Analyst", "Lecturer / Researcher", "Not sure yet"],
+  intake: ["January 2026", "May 2026", "September 2026", "January 2027", "May 2027", "September 2027", "Not sure"],
+  countries: ["UK", "Canada", "Germany", "Australia", "Ireland", "USA", "New Zealand", "Not sure"],
+  tuitionBudget: ["Under £10,000/year", "£10,000–£15,000/year", "£15,000–£20,000/year", "£20,000–£30,000/year", "£30,000+/year", "Not sure"],
+  livingBudget: ["Under £700/month", "£700–£900/month", "£900–£1,100/month", "£1,100–£1,400/month", "£1,400+/month", "Not sure"],
+  englishTest: ["IELTS", "PTE", "TOEFL", "Duolingo", "Not taken yet", "Not required / Not sure"],
+  scoreByTest: {
+    IELTS: ["5.5", "6.0", "6.5", "7.0+", "Not sure"],
+    PTE: ["50–57", "58–64", "65+", "Not sure"],
+    TOEFL: ["60–78", "79–93", "94+", "Not sure"],
+    Duolingo: ["95–104", "105–114", "115+", "Not sure"],
+  } as Record<string, string[]>,
+  documents: ["Passport", "Transcript", "Degree certificate", "IELTS/PTE", "SOP", "LOR", "CV", "Financial documents", "Not ready yet"],
+};
+
+// ===== Real-data university catalog (free public sources) =====
+export interface CatalogUniversity {
+  id: number; universityId: string; universityName: string; city: string; region: string;
+  country: string; websiteUrl: string; isRussellGroup: boolean; ukviSponsorStatus: string;
+  sponsorRating: string; internationalOfficeUrl: string; accommodationUrl: string;
+  scholarshipUrl: string; sourceUrl: string; lastCheckedAt: string | null;
+  dataConfidence: string; needsVerification: boolean; courseCount: number;
+}
+export interface CatalogCourse {
+  id: number; courseId: string; universityName: string; courseName: string; degreeLevel: string;
+  subjectArea: string; duration: string; studyMode: string; intakeMonths: string[];
+  internationalFeeGbp: number | null; internationalFeeText: string; entryRequirements: string;
+  englishLanguageRequirement: string; ieltsOverall: string | null; pteRequirement: string;
+  workPlacementAvailable: boolean | null; scholarshipInfo: string; courseUrl: string;
+  applicationUrl: string; sourceUrl: string; feeVerified: boolean; lastCheckedAt: string | null;
+  dataConfidence: string; needsVerification: boolean;
+}
+export interface Paginated<T> { count: number; next: string | null; previous: string | null; results: T[]; }
+export interface MatchedCourse extends CatalogCourse {
+  matchPercentage: number; scoreBreakdown: Record<string, number>;
+  reasons: string[]; warnings: string[]; city: string; isRussellGroup: boolean;
+}
+
+export const catalogService = {
+  async universities(params: Record<string, string | number | boolean> = {}) {
+    return (await apiClient.get<Paginated<CatalogUniversity>>("/study-match/catalog/universities/", { params })).data;
+  },
+  async university(id: number | string) {
+    return (await apiClient.get<CatalogUniversity & { courses: CatalogCourse[]; disclaimer: string }>(`/study-match/catalog/universities/${id}/`)).data;
+  },
+  async courses(params: Record<string, string | number | boolean> = {}) {
+    return (await apiClient.get<Paginated<CatalogCourse>>("/study-match/catalog/courses/", { params })).data;
+  },
+  async course(id: number | string) {
+    return (await apiClient.get<CatalogCourse & { disclaimer: string }>(`/study-match/catalog/courses/${id}/`)).data;
+  },
+  async recommendations(input: Record<string, unknown>) {
+    return (await apiClient.post<{ results: MatchedCourse[]; count: number; disclaimers: Record<string, string> }>("/study-match/catalog/recommendations/", input)).data;
+  },
+};
+
+export const SPONSOR_LABEL: Record<string, string> = {
+  licensed: "Licensed sponsor", not_listed: "Not on register", unknown: "Not checked yet",
+};
