@@ -6,7 +6,7 @@ import { Combobox } from "@/components/ui/Combobox";
 import { MultiCombobox } from "@/components/ui/MultiCombobox";
 import { ROUTES } from "@/constants";
 import { useToast } from "@/hooks/useToast";
-import { catalogService, studyMatchService, MatchedCourse, SM_OPTIONS } from "@/services/studyMatchService";
+import { catalogService, studyMatchService, MatchedCourse, SM_OPTIONS, courseFeeDisplay } from "@/services/studyMatchService";
 
 const CITIES = ["London", "Manchester", "Birmingham", "Leeds", "Sheffield", "Glasgow", "Edinburgh",
   "Newcastle upon Tyne", "Nottingham", "Coventry", "Leicester", "Cardiff", "Bristol", "Liverpool"];
@@ -95,6 +95,10 @@ export function MatchWizardPage() {
                           {c.isRussellGroup && <span className="rounded-md bg-coral/10 px-2 py-0.5 text-[11px] font-medium text-coral">Russell Group</span>}
                         </div>
                         <p className="text-sm text-ink-muted">{c.universityName} · {c.city}</p>
+                        {(() => {
+                          const f = courseFeeDisplay(c);
+                          return <p className="mt-0.5 text-xs text-ink-muted">{f.mode === "indicative" ? `Approx fee: ${f.text} (indicative)` : f.mode === "verified" ? `Fee: ${f.text}` : "Fee: check official course page"}</p>;
+                        })()}
                       </div>
                       <span className="shrink-0 rounded-full bg-coral/10 px-2.5 py-1 text-sm font-bold text-coral">{c.matchPercentage}/100</span>
                     </div>

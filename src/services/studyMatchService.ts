@@ -141,6 +141,7 @@ export interface CatalogUniversity {
   scholarshipUrl: string; sourceUrl: string; lastCheckedAt: string | null;
   dataConfidence: string; needsVerification: boolean; courseCount: number;
 }
+export interface FeeBand { key: string; label: string; minGbp: number; maxGbp: number; source?: string; sourceUrl?: string; }
 export interface CatalogCourse {
   id: number; courseId: string; universityName: string; courseName: string; degreeLevel: string;
   subjectArea: string; duration: string; studyMode: string; intakeMonths: string[];
@@ -148,7 +149,7 @@ export interface CatalogCourse {
   englishLanguageRequirement: string; ieltsOverall: string | null; pteRequirement: string;
   workPlacementAvailable: boolean | null; scholarshipInfo: string; courseUrl: string;
   applicationUrl: string; sourceUrl: string; feeVerified: boolean; lastCheckedAt: string | null;
-  dataConfidence: string; needsVerification: boolean;
+  dataConfidence: string; needsVerification: boolean; indicativeFeeBand?: FeeBand;
 }
 export interface Paginated<T> { count: number; next: string | null; previous: string | null; results: T[]; }
 export interface MatchedCourse extends CatalogCourse {
@@ -172,7 +173,17 @@ export const catalogService = {
   async recommendations(input: Record<string, unknown>) {
     return (await apiClient.post<{ results: MatchedCourse[]; count: number; disclaimers: Record<string, string> }>("/study-match/catalog/recommendations/", input)).data;
   },
+  async feeBands() {
+    return (await apiClient.get<{ bands: FeeBand[]; source: string; sourceUrl: string; disclaimer: string }>("/study-match/catalog/fee-bands/")).data;
+  },
 };
+
+/** Honest fee display: exact verified fee, else indicative band, else check-official. */
+export function courseFeeDisplay(c: CatalogCourse): { mode: "verified" | "indicative" | "unknown"; text: string; band?: FeeBand } {
+  if (c.feeVerified && c.internationalFeeGbp) return { mode: "verified", text: `£${c.internationalFeeGbp.toLocaleString()}/year` };
+  if (c.indicativeFeeBand) return { mode: "indicative", text: `£${c.indicativeFeeBand.minGbp.toLocaleString()}–£${c.indicativeFeeBand.maxGbp.toLocaleString()}/year`, band: c.indicativeFeeBand };
+  return { mode: "unknown", text: "Check official course page" };
+}
 
 export const SPONSOR_LABEL: Record<string, string> = {
   licensed: "Licensed sponsor", not_listed: "Not on register", unknown: "Not checked yet",

@@ -8,7 +8,7 @@ import { Combobox } from "@/components/ui/Combobox";
 import { ROUTES } from "@/constants";
 import { useToast } from "@/hooks/useToast";
 import { useDebounce } from "@/hooks/useDebounce";
-import { catalogService, studyMatchService, CatalogUniversity, CatalogCourse, SPONSOR_LABEL } from "@/services/studyMatchService";
+import { catalogService, studyMatchService, CatalogUniversity, CatalogCourse, SPONSOR_LABEL, courseFeeDisplay, FeeBand } from "@/services/studyMatchService";
 
 const SUBJECTS = ["", "Computer Science", "Data Science", "Artificial Intelligence", "Cyber Security",
   "Business Analytics", "Finance", "Engineering", "Public Health", "Nursing / Healthcare", "Management"];
@@ -18,10 +18,31 @@ function VerifiedBadge({ course }: { course: { feeVerified: boolean; needsVerifi
   return <span className="inline-flex items-center gap-1 rounded-md bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-700"><AlertTriangle className="h-3 w-3" /> Needs review</span>;
 }
 
-function feeText(c: { internationalFeeGbp: number | null; internationalFeeText: string }) {
-  if (c.internationalFeeGbp) return `£${c.internationalFeeGbp.toLocaleString()}/year`;
-  if (c.internationalFeeText) return c.internationalFeeText;
-  return "Check official course page";
+function feeShort(c: CatalogCourse) {
+  const f = courseFeeDisplay(c);
+  return f.mode === "indicative" ? `Approx ${f.text}` : f.text;
+}
+
+function FeeBandsGuidance() {
+  const [bands, setBands] = useState<FeeBand[]>([]);
+  const [meta, setMeta] = useState<{ source: string; sourceUrl: string; disclaimer: string } | null>(null);
+  useEffect(() => { catalogService.feeBands().then((d) => { setBands(d.bands); setMeta({ source: d.source, sourceUrl: d.sourceUrl, disclaimer: d.disclaimer }); }).catch(() => {}); }, []);
+  if (!bands.length) return null;
+  return (
+    <div className="mt-6 rounded-2xl border border-sand-border bg-sand-card p-5">
+      <h2 className="font-display text-lg font-bold text-ink">Indicative international fee bands</h2>
+      <p className="mt-0.5 text-xs text-ink-muted">Broad guidance by study level &amp; subject — not exact. Confirm the real fee on the official course page.</p>
+      <div className="mt-3 grid gap-x-6 gap-y-1 sm:grid-cols-2">
+        {bands.map((b) => (
+          <div key={b.key} className="flex justify-between border-b border-sand-border/50 py-1.5 text-sm">
+            <span className="text-ink-muted">{b.label}</span>
+            <span className="font-medium text-ink">£{b.minGbp.toLocaleString()}–£{b.maxGbp.toLocaleString()}</span>
+          </div>
+        ))}
+      </div>
+      {meta && <p className="mt-2 text-[11px] text-ink-muted">Source: {meta.source}. {meta.disclaimer}</p>}
+    </div>
+  );
 }
 
 // ---------------- University detail ----------------
@@ -75,7 +96,7 @@ export function UniversityDetailPage() {
             <button key={c.id} onClick={() => navigate(ROUTES.studyMatchCourseDetail(c.id))} className="flex w-full items-center gap-3 rounded-2xl border border-sand-border bg-sand-card p-4 text-left hover:border-coral/40">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2"><h3 className="font-medium text-ink">{c.courseName}</h3><VerifiedBadge course={c} /></div>
-                <p className="text-xs text-ink-muted">{[c.degreeLevel, c.duration, feeText(c)].filter(Boolean).join(" · ")}</p>
+                <p className="text-xs text-ink-muted">{[c.degreeLevel, c.duration, feeShort(c)].filter(Boolean).join(" · ")}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-ink-muted" />
             </button>
@@ -83,6 +104,7 @@ export function UniversityDetailPage() {
         </div>
       )}
       <p className="mt-4 text-xs text-ink-muted">{u.disclaimer}</p>
+      <FeeBandsGuidance />
     </div>
   );
 }
@@ -129,7 +151,7 @@ export function CatalogCoursesPage() {
             <button key={c.id} onClick={() => navigate(ROUTES.studyMatchCourseDetail(c.id))} className="flex w-full items-center gap-3 rounded-2xl border border-sand-border bg-sand-card p-4 text-left hover:border-coral/40">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2"><h3 className="font-medium text-ink">{c.courseName}</h3><VerifiedBadge course={c} /></div>
-                <p className="text-xs text-ink-muted">{c.universityName} · {[c.degreeLevel, c.duration, feeText(c)].filter(Boolean).join(" · ")}</p>
+                <p className="text-xs text-ink-muted">{c.universityName} · {[c.degreeLevel, c.duration, feeShort(c)].filter(Boolean).join(" · ")}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-ink-muted" />
             </button>
@@ -174,7 +196,20 @@ export function CourseDetailPage() {
           {row("Duration", c.duration)}
           {row("Study mode", c.studyMode)}
           {row("Intake", (c.intakeMonths || []).join(", "))}
-          {row("International fee", feeText(c))}
+          {(() => {
+            const f = courseFeeDisplay(c);
+            if (f.mode === "verified") return row("International fee", f.text);
+            if (f.mode === "indicative") return (
+              <div className="border-b border-sand-border/60 py-2 text-sm">
+                <div className="flex justify-between gap-3">
+                  <span className="text-ink-muted">Approx international fee band</span>
+                  <span className="text-right font-medium text-ink">{f.text} <span className="ml-1 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">Indicative</span></span>
+                </div>
+                <p className="mt-0.5 text-[11px] text-ink-muted">{f.band?.label}. Confirm exact fee on the official course page.</p>
+              </div>
+            );
+            return row("International fee", "Check official course page");
+          })()}
           {row("IELTS", c.ieltsOverall ? String(c.ieltsOverall) : "")}
           {row("English requirement", c.englishLanguageRequirement)}
           {row("Entry requirements", c.entryRequirements)}

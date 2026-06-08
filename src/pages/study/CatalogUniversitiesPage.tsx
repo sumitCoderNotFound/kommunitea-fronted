@@ -97,7 +97,7 @@ export function CatalogUniversitiesPage() {
       <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search universities…"
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, city or region…"
             className="h-11 w-full rounded-xl border border-sand-border bg-sand-card pl-9 pr-3 text-sm focus-visible:focus-ring" />
         </div>
         <div className="w-full sm:w-56"><Combobox label="" value={region} onChange={setRegion} options={["", ...REGIONS]} placeholder="All regions" /></div>
