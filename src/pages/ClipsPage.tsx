@@ -21,7 +21,6 @@ export function ClipsPage() {
   const { data, isLoading } = useQuery({ queryKey: ["clips-feed", category], queryFn: () => clipsService.feed(category) });
   const [uploadOpen, setUploadOpen] = useState(false);
   const verified = useAuthStore((s) => s.user?.isEmailVerified ?? s.user?.isVerified);
-  const toast = useToast();
 
   const clips = data?.clips ?? [];
   // If arriving from Explore with ?start=, scroll that clip into view.
