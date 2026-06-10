@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Home, Users, CalendarClock, Mail, User } from "lucide-react";
+import { Home, Search, Film, CalendarClock, User } from "lucide-react";
 import { ROUTES } from "@/constants";
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/utils/cn";
@@ -9,9 +9,9 @@ export function BottomNav() {
   const user = useAuthStore((s) => s.user);
   const items = [
     { to: ROUTES.home, label: "Home", icon: Home, end: true },
-    { to: ROUTES.tribe, label: "Tribe", icon: Users },
+    { to: ROUTES.explore, label: "Search", icon: Search },
+    { to: ROUTES.clips, label: "Clips", icon: Film },
     { to: ROUTES.plan, label: "Plan", icon: CalendarClock },
-    { to: ROUTES.inbox, label: "Inbox", icon: Mail },
     { to: user ? ROUTES.me(user.id) : ROUTES.login, label: "Me", icon: User },
   ];
   return (

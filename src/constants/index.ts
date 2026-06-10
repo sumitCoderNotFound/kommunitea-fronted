@@ -16,7 +16,9 @@ export const ROUTES = {
   // ---- Primary sections (Kommunitea naming) ----
   home: "/feed", // Home  (was Feed)
   feed: "/feed", // kept for back-compat with existing links
-  tribe: "/tribe", // Tribe (Explore / Communities) — page built in Step 2
+  tribe: "/tribe", // legacy — redirects to /explore
+  explore: "/explore", // Search / Explore (discovery hub; replaces Tribe)
+  clips: "/clips", // Clips (short videos)
   studyMatch: "/study-match",
   studyMatchStart: "/study-match/start",
   studyMatchResult: (id: string | number = ":id") => `/study-match/results/${id}`,

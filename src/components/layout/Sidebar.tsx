@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, User, FileText, Bell, Mail, Settings, Compass, X, Sparkles, CalendarClock, Users, GraduationCap } from "lucide-react";
-import { ROUTES, CATEGORIES, APP_NAME } from "@/constants";
+import { Home, User, FileText, Bell, Mail, Settings, X, Sparkles, CalendarClock, Search, Film, GraduationCap } from "lucide-react";
+import { ROUTES, APP_NAME } from "@/constants";
 import { useAuthStore } from "@/store/authStore";
 import { useUIStore } from "@/store/uiStore";
 import { StreakBadge } from "@/features/profile/StreakBadge";
@@ -9,11 +9,10 @@ import { useStreak } from "@/hooks/useStreak";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/utils/cn";
 
-// Primary Kommunitea sections. (Tribe arrives in Step 2 once its page exists,
-// so it is intentionally not listed yet — no dead links.)
 const primaryNav = [
   { to: ROUTES.home, label: "Home", icon: Home },
-  { to: ROUTES.tribe, label: "Tribe", icon: Users },
+  { to: ROUTES.explore, label: "Search", icon: Search },
+  { to: ROUTES.clips, label: "Clips", icon: Film },
   { to: ROUTES.studyMatch, label: "Study Match", icon: GraduationCap },
   { to: ROUTES.plan, label: "Plan", icon: CalendarClock },
   { to: ROUTES.inbox, label: "Inbox", icon: Mail },
@@ -57,20 +56,6 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <Icon className="h-5 w-5" /> {label}
           </NavLink>
         ))}
-      </div>
-
-      <div className="pt-5">
-        <p className="flex items-center gap-2 px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-          <Compass className="h-3.5 w-3.5" /> Categories
-        </p>
-        <div className="space-y-0.5">
-          {CATEGORIES.map((c) => (
-            <NavLink key={c.value} to={`${ROUTES.home}?category=${c.value}`} onClick={onNavigate}
-              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-ink-soft hover:bg-ink/5">
-              {c.label}
-            </NavLink>
-          ))}
-        </div>
       </div>
 
       <div className="pt-5">

@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import { AppLayout } from "@/layouts/AppLayout";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { ProtectedRoute } from "./ProtectedRoute";
@@ -15,7 +15,8 @@ import { UsernameProfilePage } from "@/pages/UsernameProfilePage";
 import { OnboardingPage } from "@/pages/OnboardingPage";
 import { FeedPage } from "@/pages/FeedPage";
 import { ImportSharePage } from "@/pages/ImportSharePage";
-import { TribePage } from "@/pages/TribePage";
+import { ExplorePage } from "@/pages/ExplorePage";
+import { ClipsPage } from "@/pages/ClipsPage";
 import { StudyMatchHomePage } from "@/pages/study/StudyMatchHomePage";
 import { StudyMatchStartPage } from "@/pages/study/StudyMatchStartPage";
 import { StudyMatchResultsPage } from "@/pages/study/StudyMatchResultsPage";
@@ -85,7 +86,9 @@ const router = createBrowserRouter([
           { path: ROUTES.feed, element: <FeedPage /> },
           { path: "/import-share", element: <ImportSharePage /> },
           // Tribe
-          { path: "/tribe", element: <TribePage /> },
+          { path: "/tribe", element: <Navigate to={ROUTES.explore} replace /> },
+          { path: ROUTES.explore, element: <ExplorePage /> },
+          { path: ROUTES.clips, element: <ClipsPage /> },
           { path: ROUTES.studyMatch, element: <StudyMatchHomePage /> },
           { path: ROUTES.studyMatchStart, element: <StudyMatchStartPage /> },
           { path: "/study-match/results/:id", element: <StudyMatchResultsPage /> },
